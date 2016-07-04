@@ -312,9 +312,7 @@ unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
         for i in length..kk {
             *buffer.offset(i) = b'0';
         }
-        *buffer.offset(kk) = b'.';
-        *buffer.offset(kk + 1) = b'0';
-        buffer.offset(kk + 2)
+        buffer.offset(kk)
     }
 
     /*
@@ -407,9 +405,7 @@ unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
     */
     else if kk < -MAX_DECIMAL_PLACES {
         *buffer = b'0';
-        *buffer.offset(1) = b'.';
-        *buffer.offset(2) = b'0';
-        buffer.offset(3)
+        buffer.offset(1)
     }
 
     /*
@@ -471,9 +467,9 @@ inline char* dtoa(double value, char* buffer, int maxDecimalPlaces = 324) {
 unsafe fn dtoa<W: io::Write>(wr: &mut W, mut value: f64) -> io::Result<()> {
     if value == 0.0 {
         if value.is_sign_negative() {
-            wr.write_all(b"-0.0")
+            wr.write_all(b"-0")
         } else {
-            wr.write_all(b"0.0")
+            wr.write_all(b"0")
         }
     } else {
         if value < 0.0 {
