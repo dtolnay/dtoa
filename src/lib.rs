@@ -307,7 +307,7 @@ unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
         return &buffer[kk + 2];
     }
     */
-    if 0 <= k && k <= 21 {
+    if 0 <= k && kk <= 21 {
         // 1234e7 -> 12340000000
         for i in length..kk {
             *buffer.offset(i) = b'0';
