@@ -2,6 +2,8 @@ extern crate dtoa;
 
 #[test]
 fn test() {
+    test_write(1.234e20, "123400000000000000000.0");
+    test_write(1.234e21, "1.234e21");
     test_write(2.71828f64, "2.71828");
     test_write(0.0f64, "0.0");
     test_write(-0.0f64, "-0.0");
