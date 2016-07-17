@@ -6,18 +6,20 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-const MAX_DECIMAL_PLACES: isize = 324;
+#[macro_export]
+macro_rules! dtoa {(
+    floating_type: $fty:ty,
+    significand_type: $sigty:ty,
+    exponent_type: $expty:ty,
+    $($diyfp_param:ident: $diyfp_value:tt,)*
+) => {
 
-use std::{io, mem, ptr, slice};
-
-use diyf32::{self, DiyFp};
-
-const DEC_DIGITS_LUT: &'static[u8] =
-    b"0001020304050607080910111213141516171819\
-      2021222324252627282930313233343536373839\
-      4041424344454647484950515253545556575859\
-      6061626364656667686970717273747576777879\
-      8081828384858687888990919293949596979899";
+diyfp! {
+    floating_type: $fty,
+    significand_type: $sigty,
+    exponent_type: $expty,
+    $($diyfp_param: $diyfp_value,)*
+};
 
 /*
 inline void GrisuRound(char* buffer, int len, uint64_t delta, uint64_t rest, uint64_t ten_kappa, uint64_t wp_w) {
@@ -31,7 +33,7 @@ inline void GrisuRound(char* buffer, int len, uint64_t delta, uint64_t rest, uin
 */
 
 #[inline]
-unsafe fn grisu_round(buffer: *mut u8, len: isize, delta: u32, mut rest: u32, ten_kappa: u32, wp_w: u32) {
+unsafe fn grisu_round(buffer: *mut u8, len: isize, delta: $sigty, mut rest: $sigty, ten_kappa: $sigty, wp_w: $sigty) {
     while rest < wp_w && delta - rest >= ten_kappa &&
            (rest + ten_kappa < wp_w || // closer
             wp_w - rest > rest + ten_kappa - wp_w) {
@@ -85,9 +87,9 @@ inline void DigitGen(const DiyFp& W, const DiyFp& Mp, uint64_t delta, char* buff
 
 // Returns length and k.
 #[inline]
-unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u32, buffer: *mut u8, mut k: isize) -> (isize, isize) {
-    static POW10: [u32; 10] = [ 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000 ];
-    let one = DiyFp::new(1u32 << -mp.e, mp.e);
+unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: $sigty, buffer: *mut u8, mut k: isize) -> (isize, isize) {
+    static POW10: [$sigty; 10] = [ 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000 ];
+    let one = DiyFp::new(1 << -mp.e, mp.e);
     let wp_w = mp - w;
     let mut p1 = (mp.f >> -one.e) as u32;
     let mut p2 = mp.f & (one.f - 1);
@@ -139,7 +141,7 @@ unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: u32, buffer: *mut u8, mut k:
             len += 1;
         }
         kappa -= 1;
-        let tmp = (p1 << -one.e) + p2;
+        let tmp = (p1 as $sigty << -one.e) + p2;
         if tmp <= delta {
             k += kappa as isize;
             grisu_round(buffer, len, delta, tmp, POW10[kappa] << -one.e, wp_w.f);
@@ -202,11 +204,11 @@ inline void Grisu2(double value, char* buffer, int* length, int* K) {
 
 // Returns length and k.
 #[inline]
-unsafe fn grisu2(value: f32, buffer: *mut u8) -> (isize, isize) {
-    let v = DiyFp::from_f32(value);
+unsafe fn grisu2(value: $fty, buffer: *mut u8) -> (isize, isize) {
+    let v = DiyFp::from(value);
     let (w_m, w_p) = v.normalized_boundaries();
 
-    let (c_mk, k) = diyf32::get_cached_power(w_p.e);
+    let (c_mk, k) = get_cached_power(w_p.e);
     let w = v.normalize() * c_mk;
     let mut wp = w_p * c_mk;
     let mut wm = w_m * c_mk;
@@ -445,7 +447,7 @@ inline char* dtoa(double value, char* buffer, int maxDecimalPlaces = 324) {
 */
 
 #[inline]
-pub unsafe fn dtoa<W: io::Write>(wr: &mut W, mut value: f32) -> io::Result<()> {
+unsafe fn dtoa<W: io::Write>(wr: &mut W, mut value: $fty) -> io::Result<()> {
     if value == 0.0 {
         if value.is_sign_negative() {
             wr.write_all(b"-0.0")
@@ -465,3 +467,5 @@ pub unsafe fn dtoa<W: io::Write>(wr: &mut W, mut value: f32) -> io::Result<()> {
             buf_ptr, end as usize - buf_ptr as usize))
     }
 }
+
+}}
