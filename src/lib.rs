@@ -6,7 +6,9 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+mod diyf32;
 mod diyf64;
+mod f32toa;
 mod f64toa;
 
 use std::io;
@@ -20,14 +22,14 @@ pub trait Floating {
     fn write<W: io::Write>(self, &mut W) -> io::Result<()>;
 }
 
-impl Floating for f64 {
+impl Floating for f32 {
     fn write<W: io::Write>(self, wr: &mut W) -> io::Result<()> {
-        unsafe { f64toa::dtoa(wr, self) }
+        unsafe { f32toa::dtoa(wr, self) }
     }
 }
 
-impl Floating for f32 {
+impl Floating for f64 {
     fn write<W: io::Write>(self, wr: &mut W) -> io::Result<()> {
-        unsafe { f64toa::dtoa(wr, self as f64) }
+        unsafe { f64toa::dtoa(wr, self) }
     }
 }

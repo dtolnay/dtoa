@@ -16,7 +16,7 @@ const DP_EXPONENT_MASK: u64 = 0x7FF0000000000000;
 const DP_SIGNIFICAND_MASK: u64 = 0x000FFFFFFFFFFFFF;
 const DP_HIDDEN_BIT: u64 = 0x0010000000000000;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct DiyFp {
     pub f: u64,
     pub e: isize,
@@ -27,6 +27,8 @@ impl DiyFp {
         DiyFp { f: f, e: e }
     }
 
+    // Preconditions:
+    // `d` must have a positive sign and must not be infinity or NaN.
     /*
     explicit DiyFp(double d) {
         union {
@@ -39,7 +41,7 @@ impl DiyFp {
         if (biased_e != 0) {
             f = significand + kDpHiddenBit;
             e = biased_e - kDpExponentBias;
-        } 
+        }
         else {
             f = significand;
             e = kDpMinExponent + 1;
@@ -64,6 +66,7 @@ impl DiyFp {
         }
     }
 
+    // Normalizes so that the highest bit of the diy significand is 1.
     /*
     DiyFp Normalize() const {
         DiyFp res = *this;
@@ -83,6 +86,10 @@ impl DiyFp {
         res
     }
 
+    // Normalizes so that the highest bit of the diy significand is 1.
+    //
+    // Precondition:
+    // `self.f` must be no more than 2 bits longer than the f64 significand.
     /*
     DiyFp NormalizeBoundary() const {
         DiyFp res = *this;
@@ -95,7 +102,7 @@ impl DiyFp {
         return res;
     }
     */
-    pub fn normalize_boundary(self) -> DiyFp {
+    fn normalize_boundary(self) -> DiyFp {
         let mut res = self;
         while (res.f & DP_HIDDEN_BIT << 1) == 0 {
             res.f <<= 1;
@@ -106,6 +113,14 @@ impl DiyFp {
         res
     }
 
+    // Normalizes `self - e` and `self + e` where `e` is half of the least
+    // significant digit of `self`. The plus is normalized so that the highest
+    // bit of the diy significand is 1. The minus is normalized so that it has
+    // the same exponent as the plus.
+    //
+    // Preconditions:
+    // `self` must have been returned directly from `DiyFp::from_f64`.
+    // `self.f` must not be zero.
     /*
     void NormalizedBoundaries(DiyFp* minus, DiyFp* plus) const {
         DiyFp pl = DiyFp((f << 1) + 1, e - 1).NormalizeBoundary();
@@ -221,7 +236,7 @@ fn get_cached_power_by_index(index: usize) -> DiyFp {
     ];
     DiyFp::new(CACHED_POWERS_F[index], CACHED_POWERS_E[index] as isize)
 }
-    
+
 /*
 inline DiyFp GetCachedPower(int e, int* K) {
     //int k = static_cast<int>(ceil((-61 - e) * 0.30102999566398114)) + 374;
