@@ -36,6 +36,7 @@ impl Floating for f32 {
             hidden_bit: 0x00800000,
             cached_powers_f: CACHED_POWERS_F_32,
             cached_powers_e: CACHED_POWERS_E_32,
+            min_power: (-36),
         };
         unsafe { dtoa(wr, self) }
     }
@@ -57,6 +58,7 @@ impl Floating for f64 {
             hidden_bit: 0x0010000000000000,
             cached_powers_f: CACHED_POWERS_F_64,
             cached_powers_e: CACHED_POWERS_E_64,
+            min_power: (-348),
         };
         unsafe { dtoa(wr, self) }
     }
@@ -73,42 +75,15 @@ static DEC_DIGITS_LUT: &'static [u8] =
       6061626364656667686970717273747576777879\
       8081828384858687888990919293949596979899";
 
-// 10^-348, 10^-340, ..., 10^340
-static CACHED_POWERS_F_32: [u32; 87] = [
-    0xfa8fd5a0, 0xbaaee180, 0x8b16fb20, 0xcf42894a,
-    0x9a6bb0aa, 0xe61acf03, 0xab70fe18, 0xff77b1fd,
-    0xbe5691ef, 0x8dd01fae, 0xd3515c28, 0x9d71ac90,
-    0xea9c2277, 0xaecc4991, 0x823c1279, 0xc2109436,
-    0x9096ea6f, 0xd77485cb, 0xa086cfce, 0xef340a98,
-    0xb23867fb, 0x84c8d4e0, 0xc5dd4427, 0x936b9fcf,
-    0xdbac6c24, 0xa3ab6658, 0xf3e2f894, 0xb5b5ada9,
-    0x87625f05, 0xc9bcff60, 0x964e858d, 0xdff97724,
-    0xa6dfbda0, 0xf8a95fd0, 0xb9447094, 0x8a08f0f9,
-    0xcdb02555, 0x993fe2c7, 0xe45c10c4, 0xaa242499,
-    0xfd87b5f3, 0xbce50865, 0x8cbccc09, 0xd1b71759,
-    0x9c400000, 0xe8d4a510, 0xad78ebc6, 0x813f3979,
-    0xc097ce7c, 0x8f7e32ce, 0xd5d238a5, 0x9f4f2726,
-    0xed63a232, 0xb0de6539, 0x83c7088e, 0xc45d1df9,
-    0x924d692d, 0xda01ee64, 0xa26da39a, 0xf209787c,
-    0xb454e4a1, 0x865b8692, 0xc83553c6, 0x952ab45d,
-    0xde469fbe, 0xa59bc235, 0xf6c69a73, 0xb7dcbf53,
-    0x88fcf318, 0xcc20ce9c, 0x98165af3, 0xe2a0b5dd,
-    0xa8d9d153, 0xfb9b7cda, 0xbb764c4d, 0x8bab8ef0,
-    0xd01fef11, 0x9b10a4e6, 0xe7109bfc, 0xac2820d9,
-    0x80444b5e, 0xbf21e440, 0x8e679c2f, 0xd433179e,
-    0x9e19db93, 0xeb96bf6f, 0xaf87023c,
+// 10^-36, 10^-28, ..., 10^52
+static CACHED_POWERS_F_32: [u32; 12] = [
+    0xaa242499, 0xfd87b5f3, 0xbce50865, 0x8cbccc09,
+    0xd1b71759, 0x9c400000, 0xe8d4a510, 0xad78ebc6,
+    0x813f3979, 0xc097ce7c, 0x8f7e32ce, 0xd5d238a5,
 ];
 
-static CACHED_POWERS_E_32: [i16; 87] = [
-    -1188, -1161, -1134, -1108, -1081, -1055, -1028, -1002,  -975,  -948,
-     -922,  -895,  -869,  -842,  -815,  -789,  -762,  -736,  -709,  -683,
-     -656,  -629,  -603,  -576,  -550,  -523,  -497,  -470,  -443,  -417,
-     -390,  -364,  -337,  -311,  -284,  -257,  -231,  -204,  -178,  -151,
-     -125,   -98,   -71,   -45,   -18,     8,    35,    62,    88,   115,
-      141,   168,   194,   221,   248,   274,   301,   327,   354,   380,
-      407,   434,   460,   487,   513,   540,   566,   593,   620,   646,
-      673,   699,   726,   752,   779,   806,   832,   859,   885,   912,
-      939,   965,   992,  1018,  1045,  1071,  1098,
+static CACHED_POWERS_E_32: [i16; 12] = [
+    -151, -125, -98, -71, -45, -18, 8, 35, 62, 88, 115, 141,
 ];
 
 // 10^-348, 10^-340, ..., 10^340

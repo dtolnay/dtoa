@@ -68,6 +68,7 @@ macro_rules! diyfp {(
     hidden_bit: $hidden_bit:expr,
     cached_powers_f: $cached_powers_f:expr,
     cached_powers_e: $cached_powers_e:expr,
+    min_power: $min_power:expr,
 ) => {
 
 pub type DiyFp = diyfp::DiyFp<$sigty, $expty>;
@@ -216,14 +217,14 @@ inline DiyFp GetCachedPower(int e, int* K) {
 */
 #[inline]
 fn get_cached_power(e: $expty) -> (DiyFp, isize) {
-    let dk = (3 - $diy_significand_size - e) as f64 * 0.30102999566398114f64 + 347f64; // dk must be positive, so can do ceiling in positive
-    let mut k = dk as isize;
+    let dk = (3 - $diy_significand_size - e) as f64 * 0.30102999566398114f64;
+    let mut k = dk as isize - $min_power - 1;
     if dk - k as f64 > 0.0 {
         k += 1;
     }
 
     let index = ((k >> 3) + 1) as usize;
-    let k = -(-348 + (index << 3) as isize); // decimal exponent no need lookup table
+    let k = -($min_power + (index << 3) as isize);
 
     (DiyFp::new($cached_powers_f[index], $cached_powers_e[index] as $expty), k)
 }
