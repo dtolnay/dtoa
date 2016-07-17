@@ -42,8 +42,13 @@ macro_rules! benches {
 }
 
 benches!(
-    bench_0(0f64),
-    bench_short(0.1234),
-    bench_e(2.718281828459045),
-    bench_max(::std::f64::MAX),
+    bench_0_f64(0f64),
+    bench_short_f64(0.1234f64),
+    bench_e_f64(2.718281828459045f64),
+    bench_max_f64(::std::f64::MAX),
+
+    bench_0_f32(0f32),
+    bench_short_f32(0.1234f32),
+    bench_e_f32(2.718281828459045f32),
+    bench_max_f32(::std::f32::MAX),
 );
