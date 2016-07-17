@@ -39,7 +39,7 @@ following in `Cargo.toml`:
 
 ```toml
 [dependencies]
-dtoa = "0.1"
+dtoa = "0.2"
 ```
 
 ## License
