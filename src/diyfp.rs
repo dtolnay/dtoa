@@ -71,7 +71,7 @@ macro_rules! diyfp {(
     min_power: $min_power:expr,
 ) => {
 
-pub type DiyFp = diyfp::DiyFp<$sigty, $expty>;
+type DiyFp = diyfp::DiyFp<$sigty, $expty>;
 
 impl DiyFp {
     // Preconditions:
@@ -192,8 +192,8 @@ impl DiyFp {
 }
 
 impl ops::Sub for DiyFp {
-    type Output = DiyFp;
-    fn sub(self, rhs: DiyFp) -> DiyFp {
+    type Output = Self;
+    fn sub(self, rhs: Self) -> Self {
         DiyFp {
             f: self.f - rhs.f,
             e: self.e,
