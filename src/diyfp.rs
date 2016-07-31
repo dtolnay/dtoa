@@ -217,8 +217,8 @@ inline DiyFp GetCachedPower(int e, int* K) {
 */
 #[inline]
 fn get_cached_power(e: $expty) -> (DiyFp, isize) {
-    let dk = (3 - $diy_significand_size - e) as f64 * 0.30102999566398114f64;
-    let mut k = dk as isize - $min_power - 1;
+    let dk = (3 - $diy_significand_size - e) as f64 * 0.30102999566398114f64 - ($min_power + 1) as f64;
+    let mut k = dk as isize;
     if dk - k as f64 > 0.0 {
         k += 1;
     }
