@@ -11,6 +11,9 @@ Yip](https://github.com/miloyip)'s C++ implementation
 [dtoa.h](https://github.com/miloyip/rapidjson/blob/master/include/rapidjson/internal/dtoa.h).
 The original C++ code of each function is included in comments.
 
+See also [`itoa`](https://github.com/dtolnay/itoa) for printing integer
+primitives.
+
 ## Performance
 
 ![performance](https://raw.githubusercontent.com/dtolnay/dtoa/master/performance.png)
