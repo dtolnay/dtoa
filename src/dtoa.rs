@@ -447,7 +447,7 @@ inline char* dtoa(double value, char* buffer, int maxDecimalPlaces = 324) {
 */
 
 #[inline]
-unsafe fn dtoa<W: io::Write>(wr: &mut W, mut value: $fty) -> io::Result<()> {
+unsafe fn dtoa<W: io::Write + ?Sized>(wr: &mut W, mut value: $fty) -> io::Result<()> {
     if value == 0.0 {
         if value.is_sign_negative() {
             wr.write_all(b"-0.0")
