@@ -30,7 +30,7 @@ dtoa::write(&mut buf, 2.71828f64).unwrap();
 The function signature is:
 
 ```rust
-fn write<W: io::Write, V: dtoa::Floating>(writer: &mut W, value: V) -> io::Result<()>
+fn write<W: io::Write + ?Sized, V: dtoa::Floating>(writer: &mut W, value: V) -> io::Result<()>
 ```
 
 where `dtoa::Floating` is implemented for `f32` and `f64`.
@@ -42,7 +42,7 @@ following in `Cargo.toml`:
 
 ```toml
 [dependencies]
-dtoa = "0.2"
+dtoa = "0.3"
 ```
 
 ## License
