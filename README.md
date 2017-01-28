@@ -23,17 +23,25 @@ primitives.
 ```rust
 extern crate dtoa;
 
+// write to a vector or other io::Write
 let mut buf = Vec::new();
-dtoa::write(&mut buf, 2.71828f64).unwrap();
+dtoa::write(&mut buf, 2.71828f64)?;
+println!("{:?}", buf);
+
+// write to a stack buffer
+let mut bytes = [b'\0'; 20];
+let n = dtoa::write(&mut bytes[..], 2.71828f64)?;
+println!("{:?}", &bytes[..n]);
 ```
 
 The function signature is:
 
 ```rust
-fn write<W: io::Write + ?Sized, V: dtoa::Floating>(writer: &mut W, value: V) -> io::Result<()>
+fn write<W: io::Write, V: dtoa::Floating>(writer: W, value: V) -> io::Result<()>
 ```
 
-where `dtoa::Floating` is implemented for `f32` and `f64`.
+where `dtoa::Floating` is implemented for `f32` and `f64`. The return value
+gives the number of bytes written.
 
 ## Dependency
 

@@ -1,5 +1,7 @@
 extern crate dtoa;
 
+use std::str;
+
 #[test]
 fn test_f64() {
     test_write(1.234e20f64, "123400000000000000000.0");
@@ -29,8 +31,8 @@ fn test_f32() {
 }
 
 fn test_write<F: dtoa::Floating>(value: F, expected: &'static str) {
-    let mut buf = Vec::with_capacity(30);
-    dtoa::write(&mut buf, value).unwrap();
-    let result = String::from_utf8(buf).unwrap();
+    let mut buf = [b'\0'; 30];
+    let len = dtoa::write(&mut buf[..], value).unwrap();
+    let result = str::from_utf8(&buf[..len]).unwrap();
     assert_eq!(result, expected.to_string());
 }

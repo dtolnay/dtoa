@@ -12,16 +12,16 @@
 use std::{io, mem, ops, ptr, slice};
 
 #[inline]
-pub fn write<W: io::Write + ?Sized, V: Floating>(wr: &mut W, value: V) -> io::Result<()> {
+pub fn write<W: io::Write, V: Floating>(wr: W, value: V) -> io::Result<usize> {
     value.write(wr)
 }
 
 pub trait Floating {
-    fn write<W: io::Write + ?Sized>(self, &mut W) -> io::Result<()>;
+    fn write<W: io::Write>(self, W) -> io::Result<usize>;
 }
 
 impl Floating for f32 {
-    fn write<W: io::Write + ?Sized>(self, wr: &mut W) -> io::Result<()> {
+    fn write<W: io::Write>(self, wr: W) -> io::Result<usize> {
         dtoa! {
             floating_type: f32,
             significand_type: u32,
@@ -43,7 +43,7 @@ impl Floating for f32 {
 }
 
 impl Floating for f64 {
-    fn write<W: io::Write + ?Sized>(self, wr: &mut W) -> io::Result<()> {
+    fn write<W: io::Write>(self, wr: W) -> io::Result<usize> {
         dtoa! {
             floating_type: f64,
             significand_type: u64,

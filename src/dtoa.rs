@@ -447,15 +447,18 @@ inline char* dtoa(double value, char* buffer, int maxDecimalPlaces = 324) {
 */
 
 #[inline]
-unsafe fn dtoa<W: io::Write + ?Sized>(wr: &mut W, mut value: $fty) -> io::Result<()> {
+unsafe fn dtoa<W: io::Write>(mut wr: W, mut value: $fty) -> io::Result<usize> {
     if value == 0.0 {
         if value.is_sign_negative() {
-            wr.write_all(b"-0.0")
+            try!(wr.write_all(b"-0.0"));
+            Ok(4)
         } else {
-            wr.write_all(b"0.0")
+            try!(wr.write_all(b"0.0"));
+            Ok(3)
         }
     } else {
-        if value < 0.0 {
+        let negative = value < 0.0;
+        if negative {
             try!(wr.write_all(b"-"));
             value = -value;
         }
@@ -463,8 +466,13 @@ unsafe fn dtoa<W: io::Write + ?Sized>(wr: &mut W, mut value: $fty) -> io::Result
         let buf_ptr = buffer.as_mut_ptr();
         let (length, k) = grisu2(value, buf_ptr);
         let end = prettify(buf_ptr, length, k);
-        wr.write_all(slice::from_raw_parts(
-            buf_ptr, end as usize - buf_ptr as usize))
+        let len = end as usize - buf_ptr as usize;
+        try!(wr.write_all(slice::from_raw_parts(buf_ptr, len)));
+        if negative {
+            Ok(len + 1)
+        } else {
+            Ok(len)
+        }
     }
 }
 
