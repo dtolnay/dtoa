@@ -50,7 +50,7 @@ following in `Cargo.toml`:
 
 ```toml
 [dependencies]
-dtoa = "0.3"
+dtoa = "0.4"
 ```
 
 ## License
