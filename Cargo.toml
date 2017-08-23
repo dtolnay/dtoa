@@ -7,3 +7,4 @@ description = "Fast functions for printing floating-point primitives to an io::W
 repository = "https://github.com/dtolnay/dtoa"
 documentation = "https://github.com/dtolnay/dtoa"
 categories = ["value-formatting"]
+exclude = ["performance.png"]
