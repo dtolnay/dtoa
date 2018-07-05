@@ -6,7 +6,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-#![doc(html_root_url = "https://docs.rs/dtoa/0.4.2")]
+#![doc(html_root_url = "https://docs.rs/dtoa/0.4.3")]
 
 #[macro_use] mod diyfp;
 #[macro_use] mod dtoa;
