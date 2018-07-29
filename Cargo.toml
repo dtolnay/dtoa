@@ -1,3 +1,5 @@
+cargo-features = ["rename-dependency"]
+
 [package]
 name = "dtoa"
 version = "0.4.3" # remember to update html_root_url
@@ -12,3 +14,8 @@ exclude = ["performance.png"]
 
 [badges]
 travis-ci = { repository = "dtolnay/dtoa" }
+
+[dev-dependencies]
+dtolnay_ryu = { package = "ryu", git = "https://github.com/dtolnay/ryu" }
+ryu = "0.1.1"
+float_fast_print = "0.1.2"
