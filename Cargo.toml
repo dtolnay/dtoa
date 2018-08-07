@@ -9,3 +9,6 @@ documentation = "https://github.com/dtolnay/dtoa"
 categories = ["value-formatting"]
 readme = "README.md"
 exclude = ["performance.png"]
+
+[badges]
+travis-ci = { repository = "dtolnay/dtoa" }
