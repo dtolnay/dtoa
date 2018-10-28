@@ -7,3 +7,7 @@ rust:
   - beta
   - stable
   - 1.0.0
+
+script:
+  - cargo build
+  - cargo test
