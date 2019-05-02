@@ -6,6 +6,46 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+//! This crate provides fast functions for printing floating-point primitives to
+//! an [`io::Write`]. The implementation is a straightforward Rust port of [Milo
+//! Yip]'s C++ implementation [dtoa.h]. The original C++ code of each function
+//! is included in comments.
+//!
+//! See also [`itoa`] for printing integer primitives.
+//!
+//! [`io::Write`]: https://doc.rust-lang.org/std/io/trait.Write.html
+//! [Milo Yip]: https://github.com/miloyip
+//! [dtoa.h]: https://github.com/miloyip/rapidjson/blob/master/include/rapidjson/internal/dtoa.h
+//! [`itoa`]: https://github.com/dtolnay/itoa
+//!
+//! <br>
+//!
+//! ## Performance (lower is better)
+//!
+//! ![performance](https://raw.githubusercontent.com/dtolnay/dtoa/master/performance.png)
+//!
+//! <br>
+//!
+//! # Examples
+//!
+//! ```edition2018
+//! use std::io;
+//!
+//! fn main() -> io::Result<()> {
+//!     // Write to a vector or other io::Write.
+//!     let mut buf = Vec::new();
+//!     dtoa::write(&mut buf, 2.71828f64)?;
+//!     println!("{:?}", buf);
+//!
+//!     // Write to a stack buffer.
+//!     let mut bytes = [b'\0'; 20];
+//!     let n = dtoa::write(&mut bytes[..], 2.71828f64)?;
+//!     println!("{:?}", &bytes[..n]);
+//!
+//!     Ok(())
+//! }
+//! ```
+
 #![doc(html_root_url = "https://docs.rs/dtoa/0.4.3")]
 
 #[macro_use] mod diyfp;
@@ -13,11 +53,13 @@
 
 use std::{io, mem, ops, ptr, slice};
 
+/// Write float to an `io::Write`.
 #[inline]
 pub fn write<W: io::Write, V: Floating>(wr: W, value: V) -> io::Result<usize> {
     value.write(wr)
 }
 
+/// An floating point number that can be formatted by `dtoa::write`.
 pub trait Floating {
     fn write<W: io::Write>(self, W) -> io::Result<usize>;
 }
