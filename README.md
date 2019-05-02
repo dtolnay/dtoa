@@ -12,6 +12,8 @@ in comments.
 
 See also [`itoa`] for printing integer primitives.
 
+*Version requirement: rustc 1.0+*
+
 [`io::Write`]: https://doc.rust-lang.org/std/io/trait.Write.html
 [Milo Yip]: https://github.com/miloyip
 [dtoa.h]: https://github.com/miloyip/rapidjson/blob/master/include/rapidjson/internal/dtoa.h
