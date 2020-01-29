@@ -469,6 +469,7 @@ inline char* dtoa(double value, char* buffer, int maxDecimalPlaces = 324) {
 }
 */
 
+#[allow(deprecated)]
 #[inline]
 unsafe fn dtoa<W: io::Write>(mut wr: W, mut value: $fty) -> io::Result<usize> {
     if value == 0.0 {
