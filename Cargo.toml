@@ -10,8 +10,5 @@ categories = ["value-formatting"]
 readme = "README.md"
 exclude = ["performance.png"]
 
-[badges]
-travis-ci = { repository = "dtolnay/dtoa" }
-
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
