@@ -1,7 +1,7 @@
 dtoa
 ====
 
-[![Build Status](https://api.travis-ci.org/dtolnay/dtoa.svg?branch=master)](https://travis-ci.org/dtolnay/dtoa)
+[![Build Status](https://img.shields.io/github/workflow/status/dtolnay/dtoa/CI/master)](https://github.com/dtolnay/dtoa/actions?query=branch%3Amaster)
 [![Latest Version](https://img.shields.io/crates/v/dtoa.svg)](https://crates.io/crates/dtoa)
 [![Rust Documentation](https://img.shields.io/badge/api-rustdoc-blue.svg)](https://docs.rs/dtoa)
 
