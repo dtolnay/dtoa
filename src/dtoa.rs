@@ -195,8 +195,11 @@ unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: $sigty, buffer: *mut u8, mut
         p2 *= 10;
         delta *= 10;
         let d = (p2 >> -one.e) as u8;
+
+        let next_digit = &mut *buffer.offset(len);
+
         if d != 0 || len != 0 {
-            *buffer.offset(len) = b'0' + d;
+            *next_digit = b'0' + d;
             len += 1;
         }
         p2 &= one.f - 1;
@@ -204,8 +207,7 @@ unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: $sigty, buffer: *mut u8, mut
         if p2 < delta {
             k += kappa as isize;
             let index = -(kappa as isize);
-            let dest_digit = &mut *buffer.offset(len - 1);
-            grisu_round(dest_digit, delta, p2, one.f, wp_w.f * if index < 9 { POW10[-(kappa as isize) as usize] } else { 0 });
+            grisu_round(next_digit, delta, p2, one.f, wp_w.f * if index < 9 { POW10[-(kappa as isize) as usize] } else { 0 });
             return (len, k);
         }
     }
