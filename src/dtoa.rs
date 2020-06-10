@@ -157,16 +157,18 @@ unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: $sigty, buffer: *mut u8, mut
             1 => { d = p1;              p1 =           0; }
             _ => {}
         }
+
+        let next_digit = &mut *buffer.offset(len);
+
         if d != 0 || len != 0 {
-            *buffer.offset(len) = b'0' + d as u8;
+            *next_digit = b'0' + d as u8;
             len += 1;
         }
         kappa -= 1;
         let tmp = (p1 as $sigty << -one.e) + p2;
         if tmp <= delta {
             k += kappa as isize;
-            let dest_digit = &mut *buffer.offset(len - 1);
-            grisu_round(dest_digit, delta, tmp, POW10[kappa] << -one.e, wp_w.f);
+            grisu_round(next_digit, delta, tmp, POW10[kappa] << -one.e, wp_w.f);
             return (len, k);
         }
     }
