@@ -54,11 +54,11 @@ inline void GrisuRound(char* buffer, int len, uint64_t delta, uint64_t rest, uin
 */
 
 #[inline]
-unsafe fn grisu_round(buffer: *mut u8, len: isize, delta: $sigty, mut rest: $sigty, ten_kappa: $sigty, wp_w: $sigty) {
+fn grisu_round(dest_digit: &mut u8, delta: $sigty, mut rest: $sigty, ten_kappa: $sigty, wp_w: $sigty) {
     while rest < wp_w && delta - rest >= ten_kappa &&
            (rest + ten_kappa < wp_w || // closer
             wp_w - rest > rest + ten_kappa - wp_w) {
-        *buffer.offset(len - 1) -= 1;
+        *dest_digit -= 1;
         rest += ten_kappa;
     }
 }
@@ -165,7 +165,8 @@ unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: $sigty, buffer: *mut u8, mut
         let tmp = (p1 as $sigty << -one.e) + p2;
         if tmp <= delta {
             k += kappa as isize;
-            grisu_round(buffer, len, delta, tmp, POW10[kappa] << -one.e, wp_w.f);
+            let dest_digit = &mut *buffer.offset(len - 1);
+            grisu_round(dest_digit, delta, tmp, POW10[kappa] << -one.e, wp_w.f);
             return (len, k);
         }
     }
@@ -201,7 +202,8 @@ unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: $sigty, buffer: *mut u8, mut
         if p2 < delta {
             k += kappa as isize;
             let index = -(kappa as isize);
-            grisu_round(buffer, len, delta, p2, one.f, wp_w.f * if index < 9 { POW10[-(kappa as isize) as usize] } else { 0 });
+            let dest_digit = &mut *buffer.offset(len - 1);
+            grisu_round(dest_digit, delta, p2, one.f, wp_w.f * if index < 9 { POW10[-(kappa as isize) as usize] } else { 0 });
             return (len, k);
         }
     }
