@@ -46,7 +46,7 @@
 //! }
 //! ```
 
-#![doc(html_root_url = "https://docs.rs/dtoa/0.4.5")]
+#![doc(html_root_url = "https://docs.rs/dtoa/0.4.6")]
 
 #[macro_use] mod diyfp;
 #[macro_use] mod dtoa;
