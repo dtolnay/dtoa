@@ -14,6 +14,10 @@ fn test_f64() {
     test_write(2.718281828459045f64, "2.718281828459045");
     test_write(5e-324f64, "5e-324");
     test_write(::std::f64::MAX, "1.7976931348623157e308");
+    test_write(::std::f64::INFINITY, "inf");
+    test_write(-::std::f64::INFINITY, "-inf");
+    test_write(::std::f64::NAN, "nan");
+    test_write(-::std::f64::NAN, "-nan");
 }
 
 #[test]
@@ -28,6 +32,10 @@ fn test_f32() {
     test_write(2.7182817f32, "2.7182817");
     test_write(1e-45f32, "1e-45");
     test_write(::std::f32::MAX, "3.4028235e38");
+    test_write(::std::f32::INFINITY, "inf");
+    test_write(-::std::f32::INFINITY, "-inf");
+    test_write(::std::f32::NAN, "nan");
+    test_write(-::std::f32::NAN, "-nan");
 }
 
 fn test_write<F: dtoa::Floating>(value: F, expected: &'static str) {

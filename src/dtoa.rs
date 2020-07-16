@@ -470,8 +470,9 @@ inline char* dtoa(double value, char* buffer, int maxDecimalPlaces = 324) {
 #[allow(deprecated)]
 #[inline]
 unsafe fn dtoa<W: io::Write>(mut wr: W, mut value: $fty) -> io::Result<usize> {
+    let negative = value.is_sign_negative();
     if value == 0.0 {
-        if value.is_sign_negative() {
+        if negative {
             match wr.write_all(b"-0.0") {
                 Ok(()) => Ok(4),
                 Err(e) => Err(e),
@@ -482,8 +483,31 @@ unsafe fn dtoa<W: io::Write>(mut wr: W, mut value: $fty) -> io::Result<usize> {
                 Err(e) => Err(e),
             }
         }
+    } else if value.is_infinite() {
+        if negative {
+            match wr.write_all(b"-inf") {
+                Ok(()) => Ok(4),
+                Err(e) => Err(e),
+            }
+        } else {
+            match wr.write_all(b"inf") {
+                Ok(()) => Ok(3),
+                Err(e) => Err(e),
+            }
+        }
+    } else if value.is_nan() {
+        if negative {
+            match wr.write_all(b"-nan") {
+                Ok(()) => Ok(4),
+                Err(e) => Err(e),
+            }
+        } else {
+            match wr.write_all(b"nan") {
+                Ok(()) => Ok(3),
+                Err(e) => Err(e),
+            }
+        }
     } else {
-        let negative = value < 0.0;
         if negative {
             if let Err(e) = wr.write_all(b"-") {
                 return Err(e);
