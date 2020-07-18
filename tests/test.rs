@@ -17,7 +17,16 @@ fn test_f64() {
     test_write(::std::f64::INFINITY, "inf");
     test_write(-::std::f64::INFINITY, "-inf");
     test_write(::std::f64::NAN, "nan");
-    test_write(-::std::f64::NAN, "-nan");
+    // Check for negative NaN support
+    //
+    // Rust versions before 1.20.0 do not have negative NaNs, see
+    // https://github.com/rust-lang/rust/pull/42431 and
+    // https://github.com/rust-lang/rust/issues/42425
+    if (-::std::f64::NAN).is_sign_negative() {
+        test_write(-::std::f64::NAN, "-nan");
+    } else {
+        test_write(-::std::f64::NAN, "nan");
+    }
 }
 
 #[test]
@@ -35,7 +44,16 @@ fn test_f32() {
     test_write(::std::f32::INFINITY, "inf");
     test_write(-::std::f32::INFINITY, "-inf");
     test_write(::std::f32::NAN, "nan");
-    test_write(-::std::f32::NAN, "-nan");
+    // Check for negative NaN support
+    //
+    // Rust versions before 1.20.0 do not have negative NaNs, see
+    // https://github.com/rust-lang/rust/pull/42431 and
+    // https://github.com/rust-lang/rust/issues/42425
+    if (-::std::f32::NAN).is_sign_negative() {
+        test_write(-::std::f32::NAN, "-nan");
+    } else {
+        test_write(-::std::f32::NAN, "nan");
+    }
 }
 
 fn test_write<F: dtoa::Floating>(value: F, expected: &'static str) {
