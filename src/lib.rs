@@ -48,7 +48,20 @@
 
 #![doc(html_root_url = "https://docs.rs/dtoa/0.4.7")]
 #![cfg_attr(feature = "cargo-clippy", allow(renamed_and_removed_lints))]
-#![cfg_attr(feature = "cargo-clippy", allow(transmute_float_to_int))]
+#![cfg_attr(
+    feature = "cargo-clippy",
+    allow(
+        cast_lossless,
+        cast_possible_truncation,
+        if_not_else,
+        missing_errors_doc,
+        range_plus_one,
+        shadow_unrelated,
+        transmute_float_to_int,
+        unreadable_literal,
+        unseparated_literal_suffix
+    )
+)]
 
 #[macro_use] mod diyfp;
 #[macro_use] mod dtoa;
