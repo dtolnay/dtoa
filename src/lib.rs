@@ -46,7 +46,7 @@
 //! }
 //! ```
 
-#![doc(html_root_url = "https://docs.rs/dtoa/0.4.7")]
+#![doc(html_root_url = "https://docs.rs/dtoa/0.4.8")]
 #![cfg_attr(feature = "cargo-clippy", allow(renamed_and_removed_lints))]
 #![cfg_attr(
     feature = "cargo-clippy",
