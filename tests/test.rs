@@ -1,3 +1,9 @@
+#![cfg_attr(feature = "cargo-clippy", allow(renamed_and_removed_lints))]
+#![cfg_attr(
+    feature = "cargo-clippy",
+    allow(approx_constant, unreadable_literal, unseparated_literal_suffix)
+)]
+
 extern crate dtoa;
 
 use std::str;
