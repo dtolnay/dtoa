@@ -56,6 +56,7 @@
         if_not_else,
         missing_errors_doc,
         range_plus_one,
+        semicolon_if_nothing_returned, // https://github.com/rust-lang/rust-clippy/issues/7768
         shadow_unrelated,
         transmute_float_to_int,
         unreadable_literal,
