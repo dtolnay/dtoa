@@ -47,21 +47,17 @@
 //! ```
 
 #![doc(html_root_url = "https://docs.rs/dtoa/0.4.8")]
-#![cfg_attr(feature = "cargo-clippy", allow(renamed_and_removed_lints))]
-#![cfg_attr(
-    feature = "cargo-clippy",
-    allow(
-        cast_lossless,
-        cast_possible_truncation,
-        if_not_else,
-        missing_errors_doc,
-        range_plus_one,
-        semicolon_if_nothing_returned, // https://github.com/rust-lang/rust-clippy/issues/7768
-        shadow_unrelated,
-        transmute_float_to_int,
-        unreadable_literal,
-        unseparated_literal_suffix
-    )
+#![allow(
+    clippy::cast_lossless,
+    clippy::cast_possible_truncation,
+    clippy::if_not_else,
+    clippy::missing_errors_doc,
+    clippy::range_plus_one,
+    clippy::semicolon_if_nothing_returned, // https://github.com/rust-lang/rust-clippy/issues/7768
+    clippy::shadow_unrelated,
+    clippy::transmute_float_to_int,
+    clippy::unreadable_literal,
+    clippy::unseparated_literal_suffix
 )]
 
 #[macro_use] mod diyfp;
