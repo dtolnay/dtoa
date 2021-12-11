@@ -65,6 +65,7 @@ mod diyfp;
 #[macro_use]
 mod dtoa;
 
+use std::mem::MaybeUninit;
 use std::{io, mem, ops, ptr, slice};
 
 /// Write float to an `io::Write`.

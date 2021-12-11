@@ -467,7 +467,6 @@ macro_rules! dtoa {
         }
         */
 
-        #[allow(deprecated)]
         #[inline]
         unsafe fn dtoa<W: io::Write>(mut wr: W, mut value: $fty) -> io::Result<usize> {
             if value == 0.0 {
@@ -490,8 +489,8 @@ macro_rules! dtoa {
                     }
                     value = -value;
                 }
-                let mut buffer: [u8; 24] = mem::uninitialized();
-                let buf_ptr = buffer.as_mut_ptr();
+                let mut buffer = [MaybeUninit::<u8>::uninit(); 24];
+                let buf_ptr = buffer.as_mut_ptr() as *mut u8;
                 let (length, k) = grisu2(value, buf_ptr);
                 let end = prettify(buf_ptr, length, k);
                 let len = end as usize - buf_ptr as usize;

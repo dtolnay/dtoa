@@ -13,7 +13,7 @@ in comments.
 
 See also [`itoa`] for printing integer primitives.
 
-*Version requirement: rustc 1.31+*
+*Version requirement: rustc 1.36+*
 
 [`io::Write`]: https://doc.rust-lang.org/std/io/trait.Write.html
 [Milo Yip]: https://github.com/miloyip
