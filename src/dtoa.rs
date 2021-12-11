@@ -275,11 +275,11 @@ macro_rules! dtoa {
             if k >= 100 {
                 *buffer = b'0' + (k / 100) as u8;
                 k %= 100;
-                let d = DEC_DIGITS_LUT.get_unchecked(k as usize * 2);
+                let d = DEC_DIGITS_LUT.as_ptr().offset(k * 2);
                 ptr::copy_nonoverlapping(d, buffer.offset(1), 2);
                 buffer.offset(3)
             } else if k >= 10 {
-                let d = DEC_DIGITS_LUT.get_unchecked(k as usize * 2);
+                let d = DEC_DIGITS_LUT.as_ptr().offset(k * 2);
                 ptr::copy_nonoverlapping(d, buffer, 2);
                 buffer.offset(2)
             } else {
