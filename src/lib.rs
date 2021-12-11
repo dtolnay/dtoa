@@ -132,17 +132,20 @@ static DEC_DIGITS_LUT: [u8; 200] = *b"\
     8081828384858687888990919293949596979899";
 
 // 10^-36, 10^-28, ..., 10^52
+#[rustfmt::skip]
 static CACHED_POWERS_F_32: [u32; 12] = [
     0xaa242499, 0xfd87b5f3, 0xbce50865, 0x8cbccc09,
     0xd1b71759, 0x9c400000, 0xe8d4a510, 0xad78ebc6,
     0x813f3979, 0xc097ce7c, 0x8f7e32ce, 0xd5d238a5,
 ];
 
+#[rustfmt::skip]
 static CACHED_POWERS_E_32: [i16; 12] = [
     -151, -125, -98, -71, -45, -18, 8, 35, 62, 88, 115, 141,
 ];
 
 // 10^-348, 10^-340, ..., 10^340
+#[rustfmt::skip]
 static CACHED_POWERS_F_64: [u64; 87] = [
     0xfa8fd5a0081c0288, 0xbaaee17fa23ebf76,
     0x8b16fb203055ac76, 0xcf42894a5dce35ea,
@@ -189,6 +192,8 @@ static CACHED_POWERS_F_64: [u64; 87] = [
     0x9e19db92b4e31ba9, 0xeb96bf6ebadf77d9,
     0xaf87023b9bf0ee6b,
 ];
+
+#[rustfmt::skip]
 static CACHED_POWERS_E_64: [i16; 87] = [
     -1220, -1193, -1166, -1140, -1113, -1087, -1060, -1034, -1007,  -980,
     -954,   -927,  -901,  -874,  -847,  -821,  -794,  -768,  -741,  -715,
