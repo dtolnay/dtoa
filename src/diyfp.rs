@@ -36,7 +36,7 @@ pub struct DiyFp<F, E> {
 
 impl<F, E> DiyFp<F, E> {
     pub fn new(f: F, e: E) -> Self {
-        DiyFp { f: f, e: e }
+        DiyFp { f, e }
     }
 }
 
