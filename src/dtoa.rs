@@ -28,13 +28,13 @@
 
 #[doc(hidden)]
 #[macro_export]
-macro_rules! dtoa {(
-    floating_type: $fty:ty,
-    significand_type: $sigty:ty,
-    exponent_type: $expty:ty,
-    $($diyfp_param:ident: $diyfp_value:tt,)*
-) => {
-
+macro_rules! dtoa {
+    (
+        floating_type: $fty:ty,
+        significand_type: $sigty:ty,
+        exponent_type: $expty:ty,
+        $($diyfp_param:ident: $diyfp_value:tt,)*
+    ) => {
         diyfp! {
             floating_type: $fty,
             significand_type: $sigty,
@@ -505,5 +505,5 @@ macro_rules! dtoa {(
                 }
             }
         }
-
-}}
+    };
+}

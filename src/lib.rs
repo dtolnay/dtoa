@@ -60,8 +60,10 @@
     clippy::unseparated_literal_suffix
 )]
 
-#[macro_use] mod diyfp;
-#[macro_use] mod dtoa;
+#[macro_use]
+mod diyfp;
+#[macro_use]
+mod dtoa;
 
 use std::{io, mem, ops, ptr, slice};
 

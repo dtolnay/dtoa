@@ -75,23 +75,23 @@ impl ops::Mul for DiyFp<u64, isize> {
 
 #[doc(hidden)]
 #[macro_export]
-macro_rules! diyfp {(
-    floating_type: $fty:ty,
-    significand_type: $sigty:ty,
-    exponent_type: $expty:ty,
+macro_rules! diyfp {
+    (
+        floating_type: $fty:ty,
+        significand_type: $sigty:ty,
+        exponent_type: $expty:ty,
 
-    diy_significand_size: $diy_significand_size:expr,
-    significand_size: $significand_size:expr,
-    exponent_bias: $exponent_bias:expr,
-    mask_type: $mask_type:ty,
-    exponent_mask: $exponent_mask:expr,
-    significand_mask: $significand_mask:expr,
-    hidden_bit: $hidden_bit:expr,
-    cached_powers_f: $cached_powers_f:expr,
-    cached_powers_e: $cached_powers_e:expr,
-    min_power: $min_power:expr,
-) => {
-
+        diy_significand_size: $diy_significand_size:expr,
+        significand_size: $significand_size:expr,
+        exponent_bias: $exponent_bias:expr,
+        mask_type: $mask_type:ty,
+        exponent_mask: $exponent_mask:expr,
+        significand_mask: $significand_mask:expr,
+        hidden_bit: $hidden_bit:expr,
+        cached_powers_f: $cached_powers_f:expr,
+        cached_powers_e: $cached_powers_e:expr,
+        min_power: $min_power:expr,
+    ) => {
         type DiyFp = diyfp::DiyFp<$sigty, $expty>;
 
         impl DiyFp {
@@ -238,7 +238,8 @@ macro_rules! diyfp {(
         */
         #[inline]
         fn get_cached_power(e: $expty) -> (DiyFp, isize) {
-            let dk = (3 - $diy_significand_size - e) as f64 * 0.30102999566398114f64 - ($min_power + 1) as f64;
+            let dk = (3 - $diy_significand_size - e) as f64 * 0.30102999566398114f64
+                - ($min_power + 1) as f64;
             let mut k = dk as isize;
             if dk - k as f64 > 0.0 {
                 k += 1;
@@ -247,7 +248,10 @@ macro_rules! diyfp {(
             let index = ((k >> 3) + 1) as usize;
             let k = -($min_power + (index << 3) as isize);
 
-            (DiyFp::new($cached_powers_f[index], $cached_powers_e[index] as $expty), k)
+            (
+                DiyFp::new($cached_powers_f[index], $cached_powers_e[index] as $expty),
+                k,
+            )
         }
-
-}}
+    };
+}
