@@ -1,6 +1,5 @@
 #![feature(test)]
 
-extern crate dtoa;
 extern crate test;
 
 macro_rules! benches {
@@ -10,8 +9,6 @@ macro_rules! benches {
             $(
                 #[bench]
                 fn $name(b: &mut Bencher) {
-                    use dtoa;
-
                     let mut buf = Vec::with_capacity(20);
 
                     b.iter(|| {

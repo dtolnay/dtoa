@@ -4,8 +4,6 @@
     clippy::unseparated_literal_suffix
 )]
 
-extern crate dtoa;
-
 use std::str;
 
 #[test]
