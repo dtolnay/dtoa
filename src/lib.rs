@@ -75,7 +75,11 @@ pub fn write<W: io::Write, V: Floating>(wr: W, value: V) -> io::Result<usize> {
 }
 
 /// An floating point number that can be formatted by `dtoa::write`.
-pub trait Floating {
+///
+/// This trait is sealed and cannot be implemented for types outside of dtoa.
+pub trait Floating: private::Sealed {
+    // Not public API.
+    #[doc(hidden)]
     fn write<W: io::Write>(self, wr: W) -> io::Result<usize>;
 }
 
@@ -121,6 +125,13 @@ impl Floating for f64 {
         };
         unsafe { dtoa(wr, self) }
     }
+}
+
+// Seal to prevent downstream implementations of Floating trait.
+mod private {
+    pub trait Sealed {}
+    impl Sealed for f32 {}
+    impl Sealed for f64 {}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
