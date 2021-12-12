@@ -52,7 +52,7 @@ mod diyfp;
 mod dtoa;
 
 use std::mem::MaybeUninit;
-use std::{io, mem, ops, ptr, slice, str};
+use std::{mem, ops, ptr, slice, str};
 
 pub struct Buffer {
     bytes: [MaybeUninit<u8>; 25],
@@ -81,17 +81,6 @@ impl Buffer {
 
     pub fn format<F: Float>(&mut self, value: F) -> &str {
         value.write(self)
-    }
-}
-
-/// Write float to an `io::Write`.
-#[inline]
-pub fn write<W: io::Write, V: Float>(mut wr: W, value: V) -> io::Result<usize> {
-    let mut buffer = Buffer::new();
-    let string = buffer.format(value);
-    match wr.write_all(string.as_bytes()) {
-        Ok(()) => Ok(string.len()),
-        Err(e) => Err(e),
     }
 }
 
