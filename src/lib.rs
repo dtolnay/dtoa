@@ -112,7 +112,7 @@ impl Float for f64 {}
 
 // Seal to prevent downstream implementations of Float trait.
 mod private {
-    pub trait Sealed {
+    pub trait Sealed: Copy {
         fn write(self, buf: &mut crate::Buffer) -> &str;
     }
 }
