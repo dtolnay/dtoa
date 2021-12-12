@@ -30,7 +30,7 @@
     fill=none,
   },
   legend entries={
-    dtoa::Buffer::new().format(value)\\
+    dtoa::Buffer::new().format\_finite(value)\\
     std::write!(\&mut buf, ``\{\}'', value)\\
   },
   legend cell align=left,
@@ -58,8 +58,8 @@
   ] coordinates {
     (0, 2)
     (1, 36)
-    (2, 50)
-    (3, 72)
+    (2, 49)
+    (3, 56)
   };
   \addplot[
     black,

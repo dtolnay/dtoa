@@ -18,7 +18,7 @@ macro_rules! benches {
                     let mut buffer = dtoa::Buffer::new();
 
                     b.iter(|| {
-                        let printed = buffer.format(black_box($value));
+                        let printed = buffer.format_finite(black_box($value));
                         black_box(printed);
                     });
                 }
