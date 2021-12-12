@@ -9,7 +9,7 @@ repository = "https://github.com/dtolnay/dtoa"
 documentation = "https://docs.rs/dtoa"
 categories = ["value-formatting"]
 readme = "README.md"
-exclude = ["performance.png"]
+exclude = ["performance.png", "chart/**"]
 edition = "2018"
 
 [package.metadata.docs.rs]
