@@ -9,11 +9,11 @@ macro_rules! benches {
             $(
                 #[bench]
                 fn $name(b: &mut Bencher) {
-                    let mut buf = Vec::with_capacity(20);
+                    let mut buffer = dtoa::Buffer::new();
 
                     b.iter(|| {
-                        buf.clear();
-                        dtoa::write(&mut buf, black_box($value)).unwrap()
+                        let printed = buffer.format(black_box($value));
+                        black_box(printed);
                     });
                 }
             )*
@@ -30,7 +30,8 @@ macro_rules! benches {
 
                     b.iter(|| {
                         buf.clear();
-                        write!(&mut buf, "{}", black_box($value)).unwrap()
+                        write!(&mut buf, "{}", black_box($value)).unwrap();
+                        black_box(&buf);
                     });
                 }
             )*

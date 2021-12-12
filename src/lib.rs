@@ -28,21 +28,11 @@
 //!
 //! # Examples
 //!
-//! ```edition2018
-//! use std::io;
-//!
-//! fn main() -> io::Result<()> {
-//!     // Write to a vector or other io::Write.
-//!     let mut buf = Vec::new();
-//!     dtoa::write(&mut buf, 2.71828f64)?;
-//!     println!("{:?}", buf);
-//!
-//!     // Write to a stack buffer.
-//!     let mut bytes = [b'\0'; 20];
-//!     let n = dtoa::write(&mut bytes[..], 2.71828f64)?;
-//!     println!("{:?}", &bytes[..n]);
-//!
-//!     Ok(())
+//! ```
+//! fn main() {
+//!     let mut buffer = dtoa::Buffer::new();
+//!     let printed = buffer.format(2.71828f64);
+//!     assert_eq!(printed, "2.71828");
 //! }
 //! ```
 

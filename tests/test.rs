@@ -35,8 +35,7 @@ fn test_f32() {
 }
 
 fn test_write<F: dtoa::Float>(value: F, expected: &'static str) {
-    let mut buf = [b'\0'; 30];
-    let len = dtoa::write(&mut buf[..], value).unwrap();
-    let result = str::from_utf8(&buf[..len]).unwrap();
-    assert_eq!(result, expected.to_string());
+    let mut buffer = dtoa::Buffer::new();
+    let string = buffer.format(value);
+    assert_eq!(string, expected);
 }
