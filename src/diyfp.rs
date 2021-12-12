@@ -26,7 +26,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-use core::ops;
+use core::ops::Mul;
 
 #[derive(Copy, Clone, Debug)]
 pub struct DiyFp<F, E> {
@@ -40,7 +40,7 @@ impl<F, E> DiyFp<F, E> {
     }
 }
 
-impl ops::Mul for DiyFp<u32, i32> {
+impl Mul for DiyFp<u32, i32> {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self {
         let mut tmp = self.f as u64 * rhs.f as u64;
@@ -52,7 +52,7 @@ impl ops::Mul for DiyFp<u32, i32> {
     }
 }
 
-impl ops::Mul for DiyFp<u64, isize> {
+impl Mul for DiyFp<u64, isize> {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self {
         let m32 = 0xFFFFFFFFu64;
@@ -210,7 +210,7 @@ macro_rules! diyfp {
             }
         }
 
-        impl ops::Sub for DiyFp {
+        impl Sub for DiyFp {
             type Output = Self;
             fn sub(self, rhs: Self) -> Self {
                 DiyFp {

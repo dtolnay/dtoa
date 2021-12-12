@@ -53,7 +53,10 @@ mod diyfp;
 mod dtoa;
 
 use core::mem::{self, MaybeUninit};
-use core::{ops, ptr, slice, str};
+use core::ops::Sub;
+use core::ptr;
+use core::slice;
+use core::str;
 
 /// A correctly sized stack allocation for the formatted float to be written
 /// into.
