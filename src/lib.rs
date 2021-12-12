@@ -66,12 +66,47 @@ mod diyfp;
 mod dtoa;
 
 use std::mem::MaybeUninit;
-use std::{io, mem, ops, ptr, slice};
+use std::{io, mem, ops, ptr, slice, str};
+
+pub struct Buffer {
+    bytes: [MaybeUninit<u8>; 25],
+}
+
+impl Default for Buffer {
+    #[inline]
+    fn default() -> Buffer {
+        Buffer::new()
+    }
+}
+
+impl Clone for Buffer {
+    #[inline]
+    fn clone(&self) -> Self {
+        Buffer::new()
+    }
+}
+
+impl Buffer {
+    #[inline]
+    pub fn new() -> Buffer {
+        let bytes = [MaybeUninit::<u8>::uninit(); 25];
+        Buffer { bytes }
+    }
+
+    pub fn format<F: Float>(&mut self, value: F) -> &str {
+        value.write(self)
+    }
+}
 
 /// Write float to an `io::Write`.
 #[inline]
-pub fn write<W: io::Write, V: Float>(wr: W, value: V) -> io::Result<usize> {
-    value.write(wr)
+pub fn write<W: io::Write, V: Float>(mut wr: W, value: V) -> io::Result<usize> {
+    let mut buffer = Buffer::new();
+    let string = buffer.format(value);
+    match wr.write_all(string.as_bytes()) {
+        Ok(()) => Ok(string.len()),
+        Err(e) => Err(e),
+    }
 }
 
 /// An floating point number that can be formatted by `dtoa::write`.
@@ -80,11 +115,12 @@ pub fn write<W: io::Write, V: Float>(wr: W, value: V) -> io::Result<usize> {
 pub trait Float: private::Sealed {
     // Not public API.
     #[doc(hidden)]
-    fn write<W: io::Write>(self, wr: W) -> io::Result<usize>;
+    fn write(self, buf: &mut Buffer) -> &str;
 }
 
 impl Float for f32 {
-    fn write<W: io::Write>(self, wr: W) -> io::Result<usize> {
+    #[inline]
+    fn write(self, buf: &mut Buffer) -> &str {
         dtoa! {
             floating_type: f32,
             significand_type: u32,
@@ -101,12 +137,13 @@ impl Float for f32 {
             cached_powers_e: CACHED_POWERS_E_32,
             min_power: (-36),
         };
-        unsafe { dtoa(wr, self) }
+        unsafe { dtoa(buf, self) }
     }
 }
 
 impl Float for f64 {
-    fn write<W: io::Write>(self, wr: W) -> io::Result<usize> {
+    #[inline]
+    fn write(self, buf: &mut Buffer) -> &str {
         dtoa! {
             floating_type: f64,
             significand_type: u64,
@@ -123,7 +160,7 @@ impl Float for f64 {
             cached_powers_e: CACHED_POWERS_E_64,
             min_power: (-348),
         };
-        unsafe { dtoa(wr, self) }
+        unsafe { dtoa(buf, self) }
     }
 }
 

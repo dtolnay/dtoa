@@ -466,40 +466,24 @@ macro_rules! dtoa {
         */
 
         #[inline]
-        unsafe fn dtoa<W: io::Write>(mut wr: W, mut value: $fty) -> io::Result<usize> {
+        unsafe fn dtoa(buf: &mut Buffer, mut value: $fty) -> &str {
             if value == 0.0 {
                 if value.is_sign_negative() {
-                    match wr.write_all(b"-0.0") {
-                        Ok(()) => Ok(4),
-                        Err(e) => Err(e),
-                    }
+                    "-0.0"
                 } else {
-                    match wr.write_all(b"0.0") {
-                        Ok(()) => Ok(3),
-                        Err(e) => Err(e),
-                    }
+                    "0.0"
                 }
             } else {
-                let negative = value < 0.0;
-                if negative {
-                    if let Err(e) = wr.write_all(b"-") {
-                        return Err(e);
-                    }
+                let mut buf_ptr = buf.bytes.as_mut_ptr() as *mut u8;
+                if value < 0.0 {
+                    *buf_ptr = b'-';
+                    buf_ptr = buf_ptr.offset(1);
                     value = -value;
                 }
-                let mut buffer = [MaybeUninit::<u8>::uninit(); 24];
-                let buf_ptr = buffer.as_mut_ptr() as *mut u8;
                 let (length, k) = grisu2(value, buf_ptr);
                 let end = prettify(buf_ptr, length, k);
                 let len = end as usize - buf_ptr as usize;
-                if let Err(e) = wr.write_all(slice::from_raw_parts(buf_ptr, len)) {
-                    return Err(e);
-                }
-                if negative {
-                    Ok(len + 1)
-                } else {
-                    Ok(len)
-                }
+                str::from_utf8_unchecked(slice::from_raw_parts(buf_ptr, len))
             }
         }
     };
