@@ -70,20 +70,20 @@ use std::{io, mem, ops, ptr, slice};
 
 /// Write float to an `io::Write`.
 #[inline]
-pub fn write<W: io::Write, V: Floating>(wr: W, value: V) -> io::Result<usize> {
+pub fn write<W: io::Write, V: Float>(wr: W, value: V) -> io::Result<usize> {
     value.write(wr)
 }
 
 /// An floating point number that can be formatted by `dtoa::write`.
 ///
 /// This trait is sealed and cannot be implemented for types outside of dtoa.
-pub trait Floating: private::Sealed {
+pub trait Float: private::Sealed {
     // Not public API.
     #[doc(hidden)]
     fn write<W: io::Write>(self, wr: W) -> io::Result<usize>;
 }
 
-impl Floating for f32 {
+impl Float for f32 {
     fn write<W: io::Write>(self, wr: W) -> io::Result<usize> {
         dtoa! {
             floating_type: f32,
@@ -105,7 +105,7 @@ impl Floating for f32 {
     }
 }
 
-impl Floating for f64 {
+impl Float for f64 {
     fn write<W: io::Write>(self, wr: W) -> io::Result<usize> {
         dtoa! {
             floating_type: f64,
@@ -127,7 +127,7 @@ impl Floating for f64 {
     }
 }
 
-// Seal to prevent downstream implementations of Floating trait.
+// Seal to prevent downstream implementations of Float trait.
 mod private {
     pub trait Sealed {}
     impl Sealed for f32 {}

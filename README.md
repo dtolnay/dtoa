@@ -56,11 +56,11 @@ fn main() -> io::Result<()> {
 The function signature is:
 
 ```rust
-fn write<W: io::Write, V: dtoa::Floating>(writer: W, value: V) -> io::Result<()>;
+fn write<W: io::Write, V: dtoa::Float>(writer: W, value: V) -> io::Result<()>;
 ```
 
-where `dtoa::Floating` is implemented for f32 and f64. The return value gives
-the number of bytes written.
+where `dtoa::Float` is implemented for f32 and f64. The return value gives the
+number of bytes written.
 
 <br>
 
