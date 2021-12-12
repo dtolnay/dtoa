@@ -54,6 +54,16 @@ mod dtoa;
 use std::mem::MaybeUninit;
 use std::{mem, ops, ptr, slice, str};
 
+/// A correctly sized stack allocation for the formatted float to be written
+/// into.
+///
+/// # Example
+///
+/// ```
+/// let mut buffer = dtoa::Buffer::new();
+/// let printed = buffer.format(2.71828);
+/// assert_eq!(printed, "2.71828");
+/// ```
 pub struct Buffer {
     bytes: [MaybeUninit<u8>; 25],
 }
@@ -73,18 +83,22 @@ impl Clone for Buffer {
 }
 
 impl Buffer {
+    /// This is a cheap operation; you don't need to worry about reusing buffers
+    /// for efficiency.
     #[inline]
     pub fn new() -> Buffer {
         let bytes = [MaybeUninit::<u8>::uninit(); 25];
         Buffer { bytes }
     }
 
+    /// Print a floating point primitive into this buffer and return a reference
+    /// to its string representation within the buffer.
     pub fn format<F: Float>(&mut self, value: F) -> &str {
         value.write(self)
     }
 }
 
-/// An floating point number that can be formatted by `dtoa::write`.
+/// A floating point number that can be written into a [`dtoa::Buffer`][Buffer].
 ///
 /// This trait is sealed and cannot be implemented for types outside of dtoa.
 pub trait Float: private::Sealed {
