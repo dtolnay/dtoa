@@ -6,27 +6,18 @@
 //!
 //! <br>
 //!
-//! This crate provides fast functions for printing floating-point primitives to
-//! an [`io::Write`]. The implementation is a straightforward Rust port of [Milo
-//! Yip]'s C++ implementation [dtoa.h]. The original C++ code of each function
-//! is included in comments.
+//! This crate provides fast conversion of floating point primitives to decimal
+//! strings. The implementation is a straightforward Rust port of [Milo Yip]'s
+//! C++ implementation [dtoa.h]. The original C++ code of each function is
+//! included in comments.
 //!
 //! See also [`itoa`] for printing integer primitives.
 //!
-//! [`io::Write`]: https://doc.rust-lang.org/std/io/trait.Write.html
 //! [Milo Yip]: https://github.com/miloyip
 //! [dtoa.h]: https://github.com/miloyip/rapidjson/blob/master/include/rapidjson/internal/dtoa.h
 //! [`itoa`]: https://github.com/dtolnay/itoa
 //!
-//! <br>
-//!
-//! ## Performance (lower is better)
-//!
-//! ![performance](https://raw.githubusercontent.com/dtolnay/dtoa/master/performance.png)
-//!
-//! <br>
-//!
-//! # Examples
+//! # Example
 //!
 //! ```
 //! fn main() {
@@ -35,6 +26,10 @@
 //!     assert_eq!(printed, "2.71828");
 //! }
 //! ```
+//!
+//! ## Performance (lower is better)
+//!
+//! ![performance](https://raw.githubusercontent.com/dtolnay/dtoa/master/performance.png)
 
 #![doc(html_root_url = "https://docs.rs/dtoa/0.4.8")]
 #![allow(
