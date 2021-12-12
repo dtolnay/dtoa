@@ -26,8 +26,6 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-#[doc(hidden)]
-#[macro_export]
 macro_rules! dtoa {
     (
         floating_type: $fty:ty,
