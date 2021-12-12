@@ -32,6 +32,7 @@
 //! ![performance](https://raw.githubusercontent.com/dtolnay/dtoa/master/performance.png)
 
 #![doc(html_root_url = "https://docs.rs/dtoa/0.4.8")]
+#![no_std]
 #![allow(
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
@@ -51,8 +52,8 @@ mod diyfp;
 #[macro_use]
 mod dtoa;
 
-use std::mem::MaybeUninit;
-use std::{mem, ops, ptr, slice, str};
+use core::mem::{self, MaybeUninit};
+use core::{ops, ptr, slice, str};
 
 /// A correctly sized stack allocation for the formatted float to be written
 /// into.
