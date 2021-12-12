@@ -21,7 +21,7 @@ See also [`itoa`] for printing integer primitives.
 
 ```toml
 [dependencies]
-dtoa = "0.4"
+dtoa = "1.0"
 ```
 
 <br>
