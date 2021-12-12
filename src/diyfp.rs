@@ -26,7 +26,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-use std::ops;
+use core::ops;
 
 #[derive(Copy, Clone, Debug)]
 pub struct DiyFp<F, E> {
