@@ -105,13 +105,19 @@ impl Buffer {
 /// A floating point number that can be written into a [`dtoa::Buffer`][Buffer].
 ///
 /// This trait is sealed and cannot be implemented for types outside of dtoa.
-pub trait Float: private::Sealed {
-    // Not public API.
-    #[doc(hidden)]
-    fn write(self, buf: &mut Buffer) -> &str;
+pub trait Float: private::Sealed {}
+
+impl Float for f32 {}
+impl Float for f64 {}
+
+// Seal to prevent downstream implementations of Float trait.
+mod private {
+    pub trait Sealed {
+        fn write(self, buf: &mut crate::Buffer) -> &str;
+    }
 }
 
-impl Float for f32 {
+impl private::Sealed for f32 {
     #[inline]
     fn write(self, buf: &mut Buffer) -> &str {
         dtoa! {
@@ -134,7 +140,7 @@ impl Float for f32 {
     }
 }
 
-impl Float for f64 {
+impl private::Sealed for f64 {
     #[inline]
     fn write(self, buf: &mut Buffer) -> &str {
         dtoa! {
@@ -155,13 +161,6 @@ impl Float for f64 {
         };
         unsafe { dtoa(buf, self) }
     }
-}
-
-// Seal to prevent downstream implementations of Float trait.
-mod private {
-    pub trait Sealed {}
-    impl Sealed for f32 {}
-    impl Sealed for f64 {}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
