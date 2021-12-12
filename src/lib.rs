@@ -69,7 +69,7 @@ const NEG_INFINITY: &str = "-inf";
 ///
 /// ```
 /// let mut buffer = dtoa::Buffer::new();
-/// let printed = buffer.format(2.71828);
+/// let printed = buffer.format_finite(2.71828);
 /// assert_eq!(printed, "2.71828");
 /// ```
 pub struct Buffer {
