@@ -54,7 +54,6 @@ mod diyfp;
 mod dtoa;
 
 use core::mem::{self, MaybeUninit};
-use core::ptr;
 use core::slice;
 use core::str;
 

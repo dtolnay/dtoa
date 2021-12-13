@@ -26,6 +26,245 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+use core::ptr;
+
+/*
+inline unsigned CountDecimalDigit32(uint32_t n) {
+    // Simple pure C++ implementation was faster than __builtin_clz version in this situation.
+    if (n < 10) return 1;
+    if (n < 100) return 2;
+    if (n < 1000) return 3;
+    if (n < 10000) return 4;
+    if (n < 100000) return 5;
+    if (n < 1000000) return 6;
+    if (n < 10000000) return 7;
+    if (n < 100000000) return 8;
+    // Will not reach 10 digits in DigitGen()
+    //if (n < 1000000000) return 9;
+    //return 10;
+    return 9;
+}
+*/
+
+#[inline]
+pub fn count_decimal_digit32(n: u32) -> usize {
+    if n < 10 { 1 }
+    else if n < 100 { 2 }
+    else if n < 1000 { 3 }
+    else if n < 10000 { 4 }
+    else if n < 100000 { 5 }
+    else if n < 1000000 { 6 }
+    else if n < 10000000 { 7 }
+    else if n < 100000000 { 8 }
+    // Will not reach 10 digits in digit_gen()
+    else { 9 }
+}
+
+/*
+inline char* WriteExponent(int K, char* buffer) {
+    if (K < 0) {
+        *buffer++ = '-';
+        K = -K;
+    }
+
+    if (K >= 100) {
+        *buffer++ = static_cast<char>('0' + static_cast<char>(K / 100));
+        K %= 100;
+        const char* d = GetDigitsLut() + K * 2;
+        *buffer++ = d[0];
+        *buffer++ = d[1];
+    }
+    else if (K >= 10) {
+        const char* d = GetDigitsLut() + K * 2;
+        *buffer++ = d[0];
+        *buffer++ = d[1];
+    }
+    else
+        *buffer++ = static_cast<char>('0' + static_cast<char>(K));
+
+    return buffer;
+}
+*/
+
+#[inline]
+unsafe fn write_exponent(mut k: isize, mut buffer: *mut u8) -> *mut u8 {
+    if k < 0 {
+        *buffer = b'-';
+        buffer = buffer.offset(1);
+        k = -k;
+    }
+
+    if k >= 100 {
+        *buffer = b'0' + (k / 100) as u8;
+        k %= 100;
+        let d = crate::DEC_DIGITS_LUT.as_ptr().offset(k * 2);
+        ptr::copy_nonoverlapping(d, buffer.offset(1), 2);
+        buffer.offset(3)
+    } else if k >= 10 {
+        let d = crate::DEC_DIGITS_LUT.as_ptr().offset(k * 2);
+        ptr::copy_nonoverlapping(d, buffer, 2);
+        buffer.offset(2)
+    } else {
+        *buffer = b'0' + k as u8;
+        buffer.offset(1)
+    }
+}
+
+/*
+inline char* Prettify(char* buffer, int length, int k, int maxDecimalPlaces) {
+    const int kk = length + k;  // 10^(kk-1) <= v < 10^kk
+*/
+
+#[inline]
+pub unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
+    let kk = length + k; // 10^(kk-1) <= v < 10^kk
+
+    /*
+    if (0 <= k && kk <= 21) {
+        // 1234e7 -> 12340000000
+        for (int i = length; i < kk; i++)
+            buffer[i] = '0';
+        buffer[kk] = '.';
+        buffer[kk + 1] = '0';
+        return &buffer[kk + 2];
+    }
+    */
+    if 0 <= k && kk <= 21 {
+        // 1234e7 -> 12340000000
+        for i in length..kk {
+            *buffer.offset(i) = b'0';
+        }
+        *buffer.offset(kk) = b'.';
+        *buffer.offset(kk + 1) = b'0';
+        buffer.offset(kk + 2)
+    }
+
+    /*
+    else if (0 < kk && kk <= 21) {
+        // 1234e-2 -> 12.34
+        std::memmove(&buffer[kk + 1], &buffer[kk], static_cast<size_t>(length - kk));
+        buffer[kk] = '.';
+        if (0 > k + maxDecimalPlaces) {
+            // When maxDecimalPlaces = 2, 1.2345 -> 1.23, 1.102 -> 1.1
+            // Remove extra trailing zeros (at least one) after truncation.
+            for (int i = kk + maxDecimalPlaces; i > kk + 1; i--)
+                if (buffer[i] != '0')
+                    return &buffer[i + 1];
+            return &buffer[kk + 2]; // Reserve one zero
+        }
+        else
+            return &buffer[length + 1];
+    }
+    */
+    else if 0 < kk && kk <= 21 {
+        // 1234e-2 -> 12.34
+        ptr::copy(buffer.offset(kk), buffer.offset(kk + 1), (length - kk) as usize);
+        *buffer.offset(kk) = b'.';
+        if 0 > k + crate::MAX_DECIMAL_PLACES {
+            // When MAX_DECIMAL_PLACES = 2, 1.2345 -> 1.23, 1.102 -> 1.1
+            // Remove extra trailing zeros (at least one) after truncation.
+            for i in (kk + 2 .. kk + crate::MAX_DECIMAL_PLACES + 1).rev() {
+                if *buffer.offset(i) != b'0' {
+                    return buffer.offset(i + 1);
+                }
+            }
+            buffer.offset(kk + 2) // Reserve one zero
+        } else {
+            buffer.offset(length + 1)
+        }
+    }
+
+    /*
+    else if (-6 < kk && kk <= 0) {
+        // 1234e-6 -> 0.001234
+        const int offset = 2 - kk;
+        std::memmove(&buffer[offset], &buffer[0], static_cast<size_t>(length));
+        buffer[0] = '0';
+        buffer[1] = '.';
+        for (int i = 2; i < offset; i++)
+            buffer[i] = '0';
+        if (length - kk > maxDecimalPlaces) {
+            // When maxDecimalPlaces = 2, 0.123 -> 0.12, 0.102 -> 0.1
+            // Remove extra trailing zeros (at least one) after truncation.
+            for (int i = maxDecimalPlaces + 1; i > 2; i--)
+                if (buffer[i] != '0')
+                    return &buffer[i + 1];
+            return &buffer[3]; // Reserve one zero
+        }
+        else
+            return &buffer[length + offset];
+    }
+    */
+    else if -6 < kk && kk <= 0 {
+        // 1234e-6 -> 0.001234
+        let offset = 2 - kk;
+        ptr::copy(buffer, buffer.offset(offset), length as usize);
+        *buffer = b'0';
+        *buffer.offset(1) = b'.';
+        for i in 2..offset {
+            *buffer.offset(i) = b'0';
+        }
+        if length - kk > crate::MAX_DECIMAL_PLACES {
+            // When MAX_DECIMAL_PLACES = 2, 0.123 -> 0.12, 0.102 -> 0.1
+            // Remove extra trailing zeros (at least one) after truncation.
+            for i in (3 .. crate::MAX_DECIMAL_PLACES + 2).rev() {
+                if *buffer.offset(i) != b'0' {
+                    return buffer.offset(i + 1);
+                }
+            }
+            buffer.offset(3) // Reserve one zero
+        } else {
+            buffer.offset(length + offset)
+        }
+    }
+
+    /*
+    else if (kk < -maxDecimalPlaces) {
+        // Truncate to zero
+        buffer[0] = '0';
+        buffer[1] = '.';
+        buffer[2] = '0';
+        return &buffer[3];
+    }
+    */
+    else if kk < -crate::MAX_DECIMAL_PLACES {
+        *buffer = b'0';
+        *buffer.offset(1) = b'.';
+        *buffer.offset(2) = b'0';
+        buffer.offset(3)
+    }
+
+    /*
+    else if (length == 1) {
+        // 1e30
+        buffer[1] = 'e';
+        return WriteExponent(kk - 1, &buffer[2]);
+    }
+    */
+    else if length == 1 {
+        // 1e30
+        *buffer.offset(1) = b'e';
+        write_exponent(kk - 1, buffer.offset(2))
+    }
+
+    /*
+    else {
+        // 1234e30 -> 1.234e33
+        std::memmove(&buffer[2], &buffer[1], static_cast<size_t>(length - 1));
+        buffer[1] = '.';
+        buffer[length + 1] = 'e';
+        return WriteExponent(kk - 1, &buffer[0 + length + 2]);
+    }
+    */
+    else {
+        // 1234e30 -> 1.234e33
+        ptr::copy(buffer.offset(1), buffer.offset(2), (length - 1) as usize);
+        *buffer.offset(1) = b'.';
+        *buffer.offset(length + 1) = b'e';
+        write_exponent(kk - 1, buffer.offset(length + 2))
+    }
+}
+
 macro_rules! dtoa {
     (
         floating_type: $fty:ty,
@@ -62,38 +301,6 @@ macro_rules! dtoa {
         }
 
         /*
-        inline unsigned CountDecimalDigit32(uint32_t n) {
-            // Simple pure C++ implementation was faster than __builtin_clz version in this situation.
-            if (n < 10) return 1;
-            if (n < 100) return 2;
-            if (n < 1000) return 3;
-            if (n < 10000) return 4;
-            if (n < 100000) return 5;
-            if (n < 1000000) return 6;
-            if (n < 10000000) return 7;
-            if (n < 100000000) return 8;
-            // Will not reach 10 digits in DigitGen()
-            //if (n < 1000000000) return 9;
-            //return 10;
-            return 9;
-        }
-        */
-
-        #[inline]
-        fn count_decimal_digit32(n: u32) -> usize {
-            if n < 10 { 1 }
-            else if n < 100 { 2 }
-            else if n < 1000 { 3 }
-            else if n < 10000 { 4 }
-            else if n < 100000 { 5 }
-            else if n < 1000000 { 6 }
-            else if n < 10000000 { 7 }
-            else if n < 100000000 { 8 }
-            // Will not reach 10 digits in digit_gen()
-            else { 9 }
-        }
-
-        /*
         inline void DigitGen(const DiyFp& W, const DiyFp& Mp, uint64_t delta, char* buffer, int* len, int* K) {
             static const uint32_t kPow10[] = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000 };
             const DiyFp one(uint64_t(1) << -Mp.e, Mp.e);
@@ -112,7 +319,7 @@ macro_rules! dtoa {
             let wp_w = mp - w;
             let mut p1 = (mp.f >> -one.e) as u32;
             let mut p2 = mp.f & (one.f - 1);
-            let mut kappa = count_decimal_digit32(p1); // kappa in [0, 9]
+            let mut kappa = dtoa::count_decimal_digit32(p1); // kappa in [0, 9]
             let mut len = 0;
 
             /*
@@ -237,211 +444,6 @@ macro_rules! dtoa {
         }
 
         /*
-        inline char* WriteExponent(int K, char* buffer) {
-            if (K < 0) {
-                *buffer++ = '-';
-                K = -K;
-            }
-
-            if (K >= 100) {
-                *buffer++ = static_cast<char>('0' + static_cast<char>(K / 100));
-                K %= 100;
-                const char* d = GetDigitsLut() + K * 2;
-                *buffer++ = d[0];
-                *buffer++ = d[1];
-            }
-            else if (K >= 10) {
-                const char* d = GetDigitsLut() + K * 2;
-                *buffer++ = d[0];
-                *buffer++ = d[1];
-            }
-            else
-                *buffer++ = static_cast<char>('0' + static_cast<char>(K));
-
-            return buffer;
-        }
-        */
-
-        #[inline]
-        unsafe fn write_exponent(mut k: isize, mut buffer: *mut u8) -> *mut u8 {
-            if k < 0 {
-                *buffer = b'-';
-                buffer = buffer.offset(1);
-                k = -k;
-            }
-
-            if k >= 100 {
-                *buffer = b'0' + (k / 100) as u8;
-                k %= 100;
-                let d = DEC_DIGITS_LUT.as_ptr().offset(k * 2);
-                ptr::copy_nonoverlapping(d, buffer.offset(1), 2);
-                buffer.offset(3)
-            } else if k >= 10 {
-                let d = DEC_DIGITS_LUT.as_ptr().offset(k * 2);
-                ptr::copy_nonoverlapping(d, buffer, 2);
-                buffer.offset(2)
-            } else {
-                *buffer = b'0' + k as u8;
-                buffer.offset(1)
-            }
-        }
-
-        /*
-        inline char* Prettify(char* buffer, int length, int k, int maxDecimalPlaces) {
-            const int kk = length + k;  // 10^(kk-1) <= v < 10^kk
-        */
-
-        #[inline]
-        unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
-            let kk = length + k; // 10^(kk-1) <= v < 10^kk
-
-            /*
-            if (0 <= k && kk <= 21) {
-                // 1234e7 -> 12340000000
-                for (int i = length; i < kk; i++)
-                    buffer[i] = '0';
-                buffer[kk] = '.';
-                buffer[kk + 1] = '0';
-                return &buffer[kk + 2];
-            }
-            */
-            if 0 <= k && kk <= 21 {
-                // 1234e7 -> 12340000000
-                for i in length..kk {
-                    *buffer.offset(i) = b'0';
-                }
-                *buffer.offset(kk) = b'.';
-                *buffer.offset(kk + 1) = b'0';
-                buffer.offset(kk + 2)
-            }
-
-            /*
-            else if (0 < kk && kk <= 21) {
-                // 1234e-2 -> 12.34
-                std::memmove(&buffer[kk + 1], &buffer[kk], static_cast<size_t>(length - kk));
-                buffer[kk] = '.';
-                if (0 > k + maxDecimalPlaces) {
-                    // When maxDecimalPlaces = 2, 1.2345 -> 1.23, 1.102 -> 1.1
-                    // Remove extra trailing zeros (at least one) after truncation.
-                    for (int i = kk + maxDecimalPlaces; i > kk + 1; i--)
-                        if (buffer[i] != '0')
-                            return &buffer[i + 1];
-                    return &buffer[kk + 2]; // Reserve one zero
-                }
-                else
-                    return &buffer[length + 1];
-            }
-            */
-            else if 0 < kk && kk <= 21 {
-                // 1234e-2 -> 12.34
-                ptr::copy(buffer.offset(kk), buffer.offset(kk + 1), (length - kk) as usize);
-                *buffer.offset(kk) = b'.';
-                if 0 > k + MAX_DECIMAL_PLACES {
-                    // When MAX_DECIMAL_PLACES = 2, 1.2345 -> 1.23, 1.102 -> 1.1
-                    // Remove extra trailing zeros (at least one) after truncation.
-                    for i in (kk + 2 .. kk + MAX_DECIMAL_PLACES + 1).rev() {
-                        if *buffer.offset(i) != b'0' {
-                            return buffer.offset(i + 1);
-                        }
-                    }
-                    buffer.offset(kk + 2) // Reserve one zero
-                } else {
-                    buffer.offset(length + 1)
-                }
-            }
-
-            /*
-            else if (-6 < kk && kk <= 0) {
-                // 1234e-6 -> 0.001234
-                const int offset = 2 - kk;
-                std::memmove(&buffer[offset], &buffer[0], static_cast<size_t>(length));
-                buffer[0] = '0';
-                buffer[1] = '.';
-                for (int i = 2; i < offset; i++)
-                    buffer[i] = '0';
-                if (length - kk > maxDecimalPlaces) {
-                    // When maxDecimalPlaces = 2, 0.123 -> 0.12, 0.102 -> 0.1
-                    // Remove extra trailing zeros (at least one) after truncation.
-                    for (int i = maxDecimalPlaces + 1; i > 2; i--)
-                        if (buffer[i] != '0')
-                            return &buffer[i + 1];
-                    return &buffer[3]; // Reserve one zero
-                }
-                else
-                    return &buffer[length + offset];
-            }
-            */
-            else if -6 < kk && kk <= 0 {
-                // 1234e-6 -> 0.001234
-                let offset = 2 - kk;
-                ptr::copy(buffer, buffer.offset(offset), length as usize);
-                *buffer = b'0';
-                *buffer.offset(1) = b'.';
-                for i in 2..offset {
-                    *buffer.offset(i) = b'0';
-                }
-                if length - kk > MAX_DECIMAL_PLACES {
-                    // When MAX_DECIMAL_PLACES = 2, 0.123 -> 0.12, 0.102 -> 0.1
-                    // Remove extra trailing zeros (at least one) after truncation.
-                    for i in (3 .. MAX_DECIMAL_PLACES + 2).rev() {
-                        if *buffer.offset(i) != b'0' {
-                            return buffer.offset(i + 1);
-                        }
-                    }
-                    buffer.offset(3) // Reserve one zero
-                } else {
-                    buffer.offset(length + offset)
-                }
-            }
-
-            /*
-            else if (kk < -maxDecimalPlaces) {
-                // Truncate to zero
-                buffer[0] = '0';
-                buffer[1] = '.';
-                buffer[2] = '0';
-                return &buffer[3];
-            }
-            */
-            else if kk < -MAX_DECIMAL_PLACES {
-                *buffer = b'0';
-                *buffer.offset(1) = b'.';
-                *buffer.offset(2) = b'0';
-                buffer.offset(3)
-            }
-
-            /*
-            else if (length == 1) {
-                // 1e30
-                buffer[1] = 'e';
-                return WriteExponent(kk - 1, &buffer[2]);
-            }
-            */
-            else if length == 1 {
-                // 1e30
-                *buffer.offset(1) = b'e';
-                write_exponent(kk - 1, buffer.offset(2))
-            }
-
-            /*
-            else {
-                // 1234e30 -> 1.234e33
-                std::memmove(&buffer[2], &buffer[1], static_cast<size_t>(length - 1));
-                buffer[1] = '.';
-                buffer[length + 1] = 'e';
-                return WriteExponent(kk - 1, &buffer[0 + length + 2]);
-            }
-            */
-            else {
-                // 1234e30 -> 1.234e33
-                ptr::copy(buffer.offset(1), buffer.offset(2), (length - 1) as usize);
-                *buffer.offset(1) = b'.';
-                *buffer.offset(length + 1) = b'e';
-                write_exponent(kk - 1, buffer.offset(length + 2))
-            }
-        }
-
-        /*
         inline char* dtoa(double value, char* buffer, int maxDecimalPlaces = 324) {
             RAPIDJSON_ASSERT(maxDecimalPlaces >= 1);
             Double d(value);
@@ -481,7 +483,7 @@ macro_rules! dtoa {
                     value = -value;
                 }
                 let (length, k) = grisu2(value, buf_ptr);
-                let end = prettify(buf_ptr, length, k);
+                let end = dtoa::prettify(buf_ptr, length, k);
                 let len = end as usize - buf_ptr as usize;
                 str::from_utf8_unchecked(slice::from_raw_parts(buf_ptr, len))
             }
