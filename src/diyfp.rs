@@ -26,7 +26,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-use core::ops::Mul;
+use core::ops::{Mul, Sub};
 
 #[derive(Copy, Clone, Debug)]
 pub struct DiyFp<F, E> {
@@ -37,6 +37,19 @@ pub struct DiyFp<F, E> {
 impl<F, E> DiyFp<F, E> {
     pub fn new(f: F, e: E) -> Self {
         DiyFp { f, e }
+    }
+}
+
+impl<F, E> Sub for DiyFp<F, E>
+where
+    F: Sub<F, Output = F>,
+{
+    type Output = Self;
+    fn sub(self, rhs: Self) -> Self {
+        DiyFp {
+            f: self.f - rhs.f,
+            e: self.e,
+        }
     }
 }
 
@@ -207,16 +220,6 @@ macro_rules! diyfp {
                 mi.f <<= mi.e - pl.e;
                 mi.e = pl.e;
                 (mi, pl)
-            }
-        }
-
-        impl Sub for DiyFp {
-            type Output = Self;
-            fn sub(self, rhs: Self) -> Self {
-                DiyFp {
-                    f: self.f - rhs.f,
-                    e: self.e,
-                }
             }
         }
 
