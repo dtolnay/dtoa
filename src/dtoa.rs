@@ -48,16 +48,27 @@ inline unsigned CountDecimalDigit32(uint32_t n) {
 
 #[inline]
 pub fn count_decimal_digit32(n: u32) -> usize {
-    if n < 10 { 1 }
-    else if n < 100 { 2 }
-    else if n < 1000 { 3 }
-    else if n < 10000 { 4 }
-    else if n < 100000 { 5 }
-    else if n < 1000000 { 6 }
-    else if n < 10000000 { 7 }
-    else if n < 100000000 { 8 }
+    if n < 10 {
+        1
+    } else if n < 100 {
+        2
+    } else if n < 1000 {
+        3
+    } else if n < 10000 {
+        4
+    } else if n < 100000 {
+        5
+    } else if n < 1000000 {
+        6
+    } else if n < 10000000 {
+        7
+    } else if n < 100000000 {
+        8
+    }
     // Will not reach 10 digits in digit_gen()
-    else { 9 }
+    else {
+        9
+    }
 }
 
 /*
@@ -138,7 +149,6 @@ pub unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
         *buffer.offset(kk + 1) = b'0';
         buffer.offset(kk + 2)
     }
-
     /*
     else if (0 < kk && kk <= 21) {
         // 1234e-2 -> 12.34
@@ -158,12 +168,16 @@ pub unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
     */
     else if 0 < kk && kk <= 21 {
         // 1234e-2 -> 12.34
-        ptr::copy(buffer.offset(kk), buffer.offset(kk + 1), (length - kk) as usize);
+        ptr::copy(
+            buffer.offset(kk),
+            buffer.offset(kk + 1),
+            (length - kk) as usize,
+        );
         *buffer.offset(kk) = b'.';
         if 0 > k + crate::MAX_DECIMAL_PLACES {
             // When MAX_DECIMAL_PLACES = 2, 1.2345 -> 1.23, 1.102 -> 1.1
             // Remove extra trailing zeros (at least one) after truncation.
-            for i in (kk + 2 .. kk + crate::MAX_DECIMAL_PLACES + 1).rev() {
+            for i in (kk + 2..kk + crate::MAX_DECIMAL_PLACES + 1).rev() {
                 if *buffer.offset(i) != b'0' {
                     return buffer.offset(i + 1);
                 }
@@ -173,7 +187,6 @@ pub unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
             buffer.offset(length + 1)
         }
     }
-
     /*
     else if (-6 < kk && kk <= 0) {
         // 1234e-6 -> 0.001234
@@ -207,7 +220,7 @@ pub unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
         if length - kk > crate::MAX_DECIMAL_PLACES {
             // When MAX_DECIMAL_PLACES = 2, 0.123 -> 0.12, 0.102 -> 0.1
             // Remove extra trailing zeros (at least one) after truncation.
-            for i in (3 .. crate::MAX_DECIMAL_PLACES + 2).rev() {
+            for i in (3..crate::MAX_DECIMAL_PLACES + 2).rev() {
                 if *buffer.offset(i) != b'0' {
                     return buffer.offset(i + 1);
                 }
@@ -217,7 +230,6 @@ pub unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
             buffer.offset(length + offset)
         }
     }
-
     /*
     else if (kk < -maxDecimalPlaces) {
         // Truncate to zero
@@ -233,7 +245,6 @@ pub unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
         *buffer.offset(2) = b'0';
         buffer.offset(3)
     }
-
     /*
     else if (length == 1) {
         // 1e30
@@ -246,7 +257,6 @@ pub unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
         *buffer.offset(1) = b'e';
         write_exponent(kk - 1, buffer.offset(2))
     }
-
     /*
     else {
         // 1234e30 -> 1.234e33
