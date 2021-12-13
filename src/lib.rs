@@ -36,6 +36,7 @@
 #![allow(
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
     clippy::doc_markdown,
     clippy::if_not_else,
     clippy::missing_errors_doc,
@@ -43,6 +44,7 @@
     clippy::range_plus_one,
     clippy::semicolon_if_nothing_returned, // https://github.com/rust-lang/rust-clippy/issues/7768
     clippy::shadow_unrelated,
+    clippy::suspicious_else_formatting,
     clippy::transmute_float_to_int,
     clippy::unreadable_literal,
     clippy::unseparated_literal_suffix
