@@ -486,7 +486,8 @@ macro_rules! dtoa {
                     "0.0"
                 }
             } else {
-                let mut buf_ptr = buf.bytes.as_mut_ptr() as *mut u8;
+                let start = buf.bytes.as_mut_ptr() as *mut u8;
+                let mut buf_ptr = start;
                 if value < 0.0 {
                     *buf_ptr = b'-';
                     buf_ptr = buf_ptr.offset(1);
@@ -494,8 +495,8 @@ macro_rules! dtoa {
                 }
                 let (length, k) = grisu2(value, buf_ptr);
                 let end = dtoa::prettify(buf_ptr, length, k);
-                let len = end as usize - buf_ptr as usize;
-                str::from_utf8_unchecked(slice::from_raw_parts(buf_ptr, len))
+                let len = end as usize - start as usize;
+                str::from_utf8_unchecked(slice::from_raw_parts(start, len))
             }
         }
     };
