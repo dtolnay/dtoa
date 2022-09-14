@@ -9,7 +9,6 @@ edition = "2018"
 exclude = ["performance.png", "chart/**"]
 keywords = ["float"]
 license = "MIT OR Apache-2.0"
-readme = "README.md"
 repository = "https://github.com/dtolnay/dtoa"
 rust-version = "1.36"
 
