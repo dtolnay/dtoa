@@ -58,6 +58,8 @@ mod dtoa;
 use core::mem::{self, MaybeUninit};
 use core::slice;
 use core::str;
+#[cfg(feature = "no-panic")]
+use no_panic::no_panic;
 
 const NAN: &str = "NaN";
 const INFINITY: &str = "inf";
@@ -95,6 +97,7 @@ impl Buffer {
     /// This is a cheap operation; you don't need to worry about reusing buffers
     /// for efficiency.
     #[inline]
+    #[cfg_attr(feature = "no-panic", no_panic)]
     pub fn new() -> Buffer {
         let bytes = [MaybeUninit::<u8>::uninit(); 25];
         Buffer { bytes }
@@ -111,6 +114,7 @@ impl Buffer {
     /// If your input is known to be finite, you may get better performance by
     /// calling the `format_finite` method instead of `format` to avoid the
     /// checks for special cases.
+    #[cfg_attr(feature = "no-panic", no_panic)]
     pub fn format<F: Float>(&mut self, value: F) -> &str {
         if value.is_nonfinite() {
             value.format_nonfinite()
@@ -134,6 +138,7 @@ impl Buffer {
     /// [`is_finite`]: https://doc.rust-lang.org/std/primitive.f64.html#method.is_finite
     /// [`is_nan`]: https://doc.rust-lang.org/std/primitive.f64.html#method.is_nan
     /// [`is_infinite`]: https://doc.rust-lang.org/std/primitive.f64.html#method.is_infinite
+    #[cfg_attr(feature = "no-panic", no_panic)]
     pub fn format_finite<F: Float>(&mut self, value: F) -> &str {
         value.write(self)
     }
@@ -158,6 +163,7 @@ mod private {
 
 impl private::Sealed for f32 {
     #[inline]
+    #[cfg_attr(feature = "no-panic", no_panic)]
     fn is_nonfinite(self) -> bool {
         const EXP_MASK: u32 = 0x7f800000;
         let bits = self.to_bits();
@@ -165,6 +171,7 @@ impl private::Sealed for f32 {
     }
 
     #[cold]
+    #[cfg_attr(feature = "no-panic", no_panic)]
     fn format_nonfinite(self) -> &'static str {
         const MANTISSA_MASK: u32 = 0x007fffff;
         const SIGN_MASK: u32 = 0x80000000;
@@ -202,6 +209,7 @@ impl private::Sealed for f32 {
 
 impl private::Sealed for f64 {
     #[inline]
+    #[cfg_attr(feature = "no-panic", no_panic)]
     fn is_nonfinite(self) -> bool {
         const EXP_MASK: u64 = 0x7ff0000000000000;
         let bits = self.to_bits();
@@ -209,6 +217,7 @@ impl private::Sealed for f64 {
     }
 
     #[cold]
+    #[cfg_attr(feature = "no-panic", no_panic)]
     fn format_nonfinite(self) -> &'static str {
         const MANTISSA_MASK: u64 = 0x000fffffffffffff;
         const SIGN_MASK: u64 = 0x8000000000000000;
