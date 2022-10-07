@@ -27,6 +27,8 @@
 // the License.
 
 use core::ptr;
+#[cfg(feature = "no-panic")]
+use no_panic::no_panic;
 
 /*
 inline unsigned CountDecimalDigit32(uint32_t n) {
@@ -47,6 +49,7 @@ inline unsigned CountDecimalDigit32(uint32_t n) {
 */
 
 #[inline]
+#[cfg_attr(feature = "no-panic", no_panic)]
 pub fn count_decimal_digit32(n: u32) -> usize {
     if n < 10 {
         1
@@ -98,6 +101,7 @@ inline char* WriteExponent(int K, char* buffer) {
 */
 
 #[inline]
+#[cfg_attr(feature = "no-panic", no_panic)]
 unsafe fn write_exponent(mut k: isize, mut buffer: *mut u8) -> *mut u8 {
     if k < 0 {
         *buffer = b'-';
@@ -127,6 +131,7 @@ inline char* Prettify(char* buffer, int length, int k, int maxDecimalPlaces) {
 */
 
 #[inline]
+#[cfg_attr(feature = "no-panic", no_panic)]
 pub unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
     let kk = length + k; // 10^(kk-1) <= v < 10^kk
 
@@ -301,6 +306,7 @@ macro_rules! dtoa {
         */
 
         #[inline]
+        #[cfg_attr(feature = "no-panic", no_panic)]
         unsafe fn grisu_round(buffer: *mut u8, len: isize, delta: $sigty, mut rest: $sigty, ten_kappa: $sigty, wp_w: $sigty) {
             while rest < wp_w && delta - rest >= ten_kappa &&
                 (rest + ten_kappa < wp_w || // closer
@@ -323,6 +329,7 @@ macro_rules! dtoa {
 
         // Returns length and k.
         #[inline]
+        #[cfg_attr(feature = "no-panic", no_panic)]
         unsafe fn digit_gen(w: DiyFp, mp: DiyFp, mut delta: $sigty, buffer: *mut u8, mut k: isize) -> (isize, isize) {
             static POW10: [$sigty; 10] = [ 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000 ];
             let one = DiyFp::new(1 << -mp.e, mp.e);
@@ -377,10 +384,10 @@ macro_rules! dtoa {
                     len += 1;
                 }
                 kappa -= 1;
-                let tmp = (p1 as $sigty << -one.e) + p2;
+                let tmp = ((p1 as $sigty) << -one.e) + p2;
                 if tmp <= delta {
                     k += kappa as isize;
-                    grisu_round(buffer, len, delta, tmp, POW10[kappa] << -one.e, wp_w.f);
+                    grisu_round(buffer, len, delta, tmp, *POW10.get_unchecked(kappa) << -one.e, wp_w.f);
                     return (len, k);
                 }
             }
@@ -416,7 +423,18 @@ macro_rules! dtoa {
                 if p2 < delta {
                     k += kappa as isize;
                     let index = -(kappa as isize);
-                    grisu_round(buffer, len, delta, p2, one.f, wp_w.f * if index < 9 { POW10[-(kappa as isize) as usize] } else { 0 });
+                    grisu_round(
+                        buffer,
+                        len,
+                        delta,
+                        p2,
+                        one.f,
+                        wp_w.f * if index < 9 {
+                            *POW10.get_unchecked(-(kappa as isize) as usize)
+                        } else {
+                            0
+                        },
+                    );
                     return (len, k);
                 }
             }
@@ -440,6 +458,7 @@ macro_rules! dtoa {
 
         // Returns length and k.
         #[inline]
+        #[cfg_attr(feature = "no-panic", no_panic)]
         unsafe fn grisu2(value: $fty, buffer: *mut u8) -> (isize, isize) {
             let v = DiyFp::from(value);
             let (w_m, w_p) = v.normalized_boundaries();
@@ -478,6 +497,7 @@ macro_rules! dtoa {
         */
 
         #[inline]
+        #[cfg_attr(feature = "no-panic", no_panic)]
         unsafe fn dtoa(buf: &mut Buffer, mut value: $fty) -> &str {
             if value == 0.0 {
                 if value.is_sign_negative() {
