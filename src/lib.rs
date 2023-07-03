@@ -38,6 +38,7 @@
     clippy::cast_possible_truncation,
     clippy::cast_sign_loss,
     clippy::doc_markdown,
+    clippy::expl_impl_clone_on_copy,
     clippy::if_not_else,
     clippy::missing_errors_doc,
     clippy::must_use_candidate,
