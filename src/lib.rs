@@ -31,7 +31,7 @@
 //!
 //! ![performance](https://raw.githubusercontent.com/dtolnay/dtoa/master/performance.png)
 
-#![doc(html_root_url = "https://docs.rs/dtoa/1.0.8")]
+#![doc(html_root_url = "https://docs.rs/dtoa/1.0.9")]
 #![no_std]
 #![allow(
     clippy::cast_lossless,
