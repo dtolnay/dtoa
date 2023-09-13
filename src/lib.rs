@@ -42,6 +42,7 @@
     clippy::if_not_else,
     clippy::missing_errors_doc,
     clippy::must_use_candidate,
+    clippy::needless_doctest_main,
     clippy::range_plus_one,
     clippy::semicolon_if_nothing_returned, // https://github.com/rust-lang/rust-clippy/issues/7768
     clippy::shadow_unrelated,
