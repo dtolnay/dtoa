@@ -36,6 +36,7 @@
 #![allow(
     clippy::cast_lossless,
     clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
     clippy::cast_sign_loss,
     clippy::doc_markdown,
     clippy::expl_impl_clone_on_copy,
