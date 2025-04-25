@@ -59,7 +59,7 @@ mod diyfp;
 #[macro_use]
 mod dtoa;
 
-use core::mem::{self, MaybeUninit};
+use core::mem::MaybeUninit;
 use core::slice;
 use core::str;
 #[cfg(feature = "no-panic")]

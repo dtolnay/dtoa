@@ -138,7 +138,7 @@ macro_rules! diyfp {
             */
             #[cfg_attr(feature = "no-panic", no_panic)]
             unsafe fn from(d: $fty) -> Self {
-                let u: $mask_type = mem::transmute(d);
+                let u: $mask_type = <$fty>::to_bits(d);
 
                 let biased_e = ((u & $exponent_mask) >> $significand_size) as $expty;
                 let significand = u & $significand_mask;
