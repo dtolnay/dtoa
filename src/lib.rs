@@ -49,9 +49,9 @@
     clippy::semicolon_if_nothing_returned, // https://github.com/rust-lang/rust-clippy/issues/7768
     clippy::shadow_unrelated,
     clippy::suspicious_else_formatting,
-    clippy::transmute_float_to_int,
     clippy::unreadable_literal,
-    clippy::unseparated_literal_suffix
+    clippy::unseparated_literal_suffix,
+    unnecessary_transmutes
 )]
 
 #[macro_use]
