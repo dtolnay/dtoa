@@ -50,8 +50,7 @@
     clippy::shadow_unrelated,
     clippy::suspicious_else_formatting,
     clippy::unreadable_literal,
-    clippy::unseparated_literal_suffix,
-    unnecessary_transmutes
+    clippy::unseparated_literal_suffix
 )]
 
 #[macro_use]
