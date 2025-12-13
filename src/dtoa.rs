@@ -105,7 +105,7 @@ inline char* WriteExponent(int K, char* buffer) {
 unsafe fn write_exponent(mut k: isize, mut buffer: *mut u8) -> *mut u8 {
     if k < 0 {
         *buffer = b'-';
-        buffer = buffer.offset(1);
+        buffer = buffer.add(1);
         k = -k;
     }
 
@@ -113,15 +113,15 @@ unsafe fn write_exponent(mut k: isize, mut buffer: *mut u8) -> *mut u8 {
         *buffer = b'0' + (k / 100) as u8;
         k %= 100;
         let d = crate::DEC_DIGITS_LUT.as_ptr().offset(k * 2);
-        ptr::copy_nonoverlapping(d, buffer.offset(1), 2);
-        buffer.offset(3)
+        ptr::copy_nonoverlapping(d, buffer.add(1), 2);
+        buffer.add(3)
     } else if k >= 10 {
         let d = crate::DEC_DIGITS_LUT.as_ptr().offset(k * 2);
         ptr::copy_nonoverlapping(d, buffer, 2);
-        buffer.offset(2)
+        buffer.add(2)
     } else {
         *buffer = b'0' + k as u8;
-        buffer.offset(1)
+        buffer.add(1)
     }
 }
 
@@ -218,7 +218,7 @@ pub unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
         let offset = 2 - kk;
         ptr::copy(buffer, buffer.offset(offset), length as usize);
         *buffer = b'0';
-        *buffer.offset(1) = b'.';
+        *buffer.add(1) = b'.';
         for i in 2..offset {
             *buffer.offset(i) = b'0';
         }
@@ -230,7 +230,7 @@ pub unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
                     return buffer.offset(i + 1);
                 }
             }
-            buffer.offset(3) // Reserve one zero
+            buffer.add(3) // Reserve one zero
         } else {
             buffer.offset(length + offset)
         }
@@ -246,9 +246,9 @@ pub unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
     */
     else if kk < -crate::MAX_DECIMAL_PLACES {
         *buffer = b'0';
-        *buffer.offset(1) = b'.';
-        *buffer.offset(2) = b'0';
-        buffer.offset(3)
+        *buffer.add(1) = b'.';
+        *buffer.add(2) = b'0';
+        buffer.add(3)
     }
     /*
     else if (length == 1) {
@@ -259,8 +259,8 @@ pub unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
     */
     else if length == 1 {
         // 1e30
-        *buffer.offset(1) = b'e';
-        write_exponent(kk - 1, buffer.offset(2))
+        *buffer.add(1) = b'e';
+        write_exponent(kk - 1, buffer.add(2))
     }
     /*
     else {
@@ -273,8 +273,8 @@ pub unsafe fn prettify(buffer: *mut u8, length: isize, k: isize) -> *mut u8 {
     */
     else {
         // 1234e30 -> 1.234e33
-        ptr::copy(buffer.offset(1), buffer.offset(2), (length - 1) as usize);
-        *buffer.offset(1) = b'.';
+        ptr::copy(buffer.add(1), buffer.add(2), (length - 1) as usize);
+        *buffer.add(1) = b'.';
         *buffer.offset(length + 1) = b'e';
         write_exponent(kk - 1, buffer.offset(length + 2))
     }
@@ -510,7 +510,7 @@ macro_rules! dtoa {
                 let mut buf_ptr = start;
                 if value < 0.0 {
                     *buf_ptr = b'-';
-                    buf_ptr = buf_ptr.offset(1);
+                    buf_ptr = buf_ptr.add(1);
                     value = -value;
                 }
                 let (length, k) = grisu2(value, buf_ptr);
