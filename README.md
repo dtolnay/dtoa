@@ -13,8 +13,6 @@ comments.
 
 See also [`itoa`] for printing integer primitives.
 
-*Version requirement: rustc 1.36+*
-
 [Milo Yip]: https://github.com/miloyip
 [dtoa.h]: https://github.com/miloyip/rapidjson/blob/master/include/rapidjson/internal/dtoa.h
 [`itoa`]: https://github.com/dtolnay/itoa
