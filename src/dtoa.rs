@@ -506,7 +506,7 @@ macro_rules! dtoa {
                     "0.0"
                 }
             } else {
-                let start = buf.bytes.as_mut_ptr() as *mut u8;
+                let start = buf.bytes.as_mut_ptr().cast::<u8>();
                 let mut buf_ptr = start;
                 if value < 0.0 {
                     *buf_ptr = b'-';
