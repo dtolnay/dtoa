@@ -10,7 +10,8 @@ extern crate test;
 macro_rules! benches {
     ($($name:ident($value:expr),)*) => {
         mod bench_dtoa {
-            use test::{Bencher, black_box};
+            use std::hint;
+            use test::Bencher;
 
             $(
                 #[bench]
@@ -18,16 +19,17 @@ macro_rules! benches {
                     let mut buffer = dtoa::Buffer::new();
 
                     b.iter(|| {
-                        let printed = buffer.format_finite(black_box($value));
-                        black_box(printed);
+                        let printed = buffer.format_finite(hint::black_box($value));
+                        hint::black_box(printed);
                     });
                 }
             )*
         }
 
         mod bench_fmt {
+            use std::hint;
             use std::io::Write;
-            use test::{Bencher, black_box};
+            use test::Bencher;
 
             $(
                 #[bench]
@@ -36,8 +38,8 @@ macro_rules! benches {
 
                     b.iter(|| {
                         buf.clear();
-                        write!(&mut buf, "{}", black_box($value)).unwrap();
-                        black_box(&buf);
+                        write!(&mut buf, "{}", hint::black_box($value)).unwrap();
+                        hint::black_box(&buf);
                     });
                 }
             )*
