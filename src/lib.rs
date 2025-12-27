@@ -39,7 +39,7 @@
 //!
 //! ![performance](https://raw.githubusercontent.com/dtolnay/dtoa/master/dtoa-benchmark.png)
 
-#![doc(html_root_url = "https://docs.rs/dtoa/1.0.10")]
+#![doc(html_root_url = "https://docs.rs/dtoa/1.0.11")]
 #![no_std]
 #![allow(
     clippy::cast_lossless,

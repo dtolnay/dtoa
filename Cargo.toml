@@ -1,6 +1,6 @@
 [package]
 name = "dtoa"
-version = "1.0.10"
+version = "1.0.11"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["value-formatting", "no-std", "no-std::no-alloc"]
 description = "Fast floating point primitive to string conversion"
