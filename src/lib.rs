@@ -27,9 +27,17 @@
 //! }
 //! ```
 //!
-//! ## Performance (lower is better)
+//! ## Performance
 //!
-//! ![performance](https://raw.githubusercontent.com/dtolnay/dtoa/master/performance.png)
+//! The [dtoa-benchmark] compares this library and other Rust floating point
+//! formatting implementations across a range of precisions. The vertical axis
+//! in this chart shows nanoseconds taken by a single execution of
+//! `dtoa::Buffer::new().format_finite(value)` so a lower result indicates a
+//! faster library.
+//!
+//! [dtoa-benchmark]: https://github.com/dtolnay/dtoa-benchmark
+//!
+//! ![performance](https://raw.githubusercontent.com/dtolnay/dtoa/master/dtoa-benchmark.png)
 
 #![doc(html_root_url = "https://docs.rs/dtoa/1.0.10")]
 #![no_std]
