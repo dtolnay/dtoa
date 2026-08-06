@@ -4,8 +4,6 @@
     clippy::unseparated_literal_suffix
 )]
 
-use std::{f32, f64};
-
 #[test]
 fn test_f64() {
     test_write(1.234e20f64, "123400000000000000000.0");
